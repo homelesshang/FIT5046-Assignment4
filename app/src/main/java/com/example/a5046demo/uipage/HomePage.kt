@@ -21,6 +21,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.clip
 import com.example.a5046demo.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.a5046demo.viewmodel.WeatherViewModel
+import androidx.compose.runtime.*
 
 @Composable
 fun EnhancedHomeScreen(userName: String = "John Doe", weight: String = "68.5 kg") {
@@ -194,59 +197,14 @@ fun EnhancedHomeScreen(userName: String = "John Doe", weight: String = "68.5 kg"
                 }
             }
 
-            // Weather & Suggestion Card (放大版)
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9))
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "🌤️ Melbourne",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2E8B57)
-                        )
-                        Text(
-                            text = "22°C",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF2E8B57)
-                        )
-                    }
-
-                    Text(
-                        text = "Perfect weather for an outdoor run! 🏃‍♂️ Stay hydrated 💧",
-                        fontSize = 14.sp,
-                        color = Color(0xFF2E8B57)
-                    )
-                }
-            }
+            WeatherCard()
 
             Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
 
-@Composable
-fun SummaryStat(value: String, label: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text(label, fontSize = 14.sp, color = Color.Gray)
-    }
-}
+
 
 @Composable
 fun ExerciseCard(title: String, kcal: Int, color: Color) {
@@ -258,6 +216,44 @@ fun ExerciseCard(title: String, kcal: Int, color: Color) {
         Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text("$kcal Kcal", color = Color.White, fontWeight = FontWeight.Bold)
             Text(title, color = Color.White)
+        }
+    }
+}
+
+@Composable
+fun WeatherCard(viewModel: WeatherViewModel = viewModel()) {
+    val weatherText by viewModel.weather.collectAsState()
+
+    // 组件首次加载时获取天气
+    LaunchedEffect(Unit) {
+        viewModel.fetchWeather("Melbourne,AU")
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(140.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "🌤️ Melbourne",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF2E8B57)
+            )
+
+            Text(
+                text = weatherText, // 动态显示天气信息
+                fontSize = 16.sp,
+                color = Color(0xFF2E8B57)
+            )
         }
     }
 }
