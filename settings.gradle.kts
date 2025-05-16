@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "5046demo"
+rootProject.name = "FitNest"
 include(":app")
- 
