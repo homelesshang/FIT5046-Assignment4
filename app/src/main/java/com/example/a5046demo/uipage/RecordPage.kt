@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +17,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogProgressScreen(
+fun RecordScreen(
     onConfirm: () -> Unit = {}
 ) {
     var selectedIntensity by remember { mutableStateOf("Medium") }
@@ -41,65 +38,6 @@ fun LogProgressScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF2E8B57))
             )
-        },
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                contentColor = Color(0xFF2E8B57)
-            ) {
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Navigate to Home */ },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Already on Record screen */ },
-                    icon = { Text("📝", fontSize = 20.sp) },
-                    label = { Text("Record", color = Color(0xFF2E8B57)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Navigate to History */ },
-                    icon = { Text("📚", fontSize = 20.sp) },
-                    label = { Text("History", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Navigate to Profile */ },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("Profile", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-            }
         }
     ) { padding ->
         Column(
@@ -234,6 +172,6 @@ fun LogProgressScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewLogProgressScreen() {
-    LogProgressScreen()
+fun PreviewRecordScreen() {
+    RecordScreen()
 }

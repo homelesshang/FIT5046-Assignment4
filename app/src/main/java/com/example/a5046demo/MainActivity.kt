@@ -15,7 +15,7 @@ import com.example.a5046demo.ui.theme._5046demoTheme
 import com.example.a5046demo.uipage.WeatherCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
-import com.example.a5046demo.uipage.EnhancedHomeScreen
+import com.example.a5046demo.uipage.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             _5046demoTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    EnhancedHomeScreen() // ✅ 显示完整首页
+                    StartAppNavigation() // ✅ 显示完整首页
                 }
             }
         }

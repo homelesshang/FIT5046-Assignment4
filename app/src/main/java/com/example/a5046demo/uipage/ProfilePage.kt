@@ -1,5 +1,6 @@
 package com.example.a5046demo.uipage
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,9 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.a5046demo.R
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenGreenTheme(
+fun ProfileScreen(
     userName: String = "John Doe",
     location: String = "Melbourne, Australia",
     weight: String = "60kg",
@@ -47,67 +49,6 @@ fun ProfileScreenGreenTheme(
                     containerColor = Color.White
                 )
             )
-        },
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                contentColor = Color(0xFF2E8B57)
-            ) {
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Navigate to Home */ },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-                NavigationBarItem(
-                    selected = false, // 或 true 取决于你是否当前页面
-                    onClick = { /* Navigate to Record */ },
-                    icon = { Text("📝", fontSize = 20.sp) }, // 或者用 Icon(Icons.Default.Edit, ...)
-                    label = { Text("Record", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Navigate to History screen */ },
-                    icon = { Text("📚", fontSize = 20.sp) }, // 你也可以改成 Icons.Default.List 或自定义图标
-                    label = { Text("History", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Already on Profile */ },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("Profile", color = Color(0xFF2E8B57)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-            }
-
         }
     ) { padding ->
         Column(
@@ -157,7 +98,9 @@ fun ProfileScreenGreenTheme(
                         InfoCardGreen("BMI", bmi, "📊")
                     }
                 }
+
                 Spacer(modifier = Modifier.height(32.dp))
+
                 Button(
                     onClick = { /* TODO: handle logout */ },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
@@ -169,16 +112,10 @@ fun ProfileScreenGreenTheme(
                 }
             }
 
-            // Calorie Burned
             Spacer(modifier = Modifier.height(16.dp))
             Text("Calories Burned Today", fontSize = 14.sp, color = Color.Gray)
             Text(burned, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E8B57))
-
-
         }
-
-        // Logout Button
-
     }
 }
 
@@ -207,6 +144,6 @@ fun InfoCardGreen(title: String, value: String, icon: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewProfileScreenGreen() {
-    ProfileScreenGreenTheme()
+fun PreviewProfileScreen() {
+    ProfileScreen()
 }

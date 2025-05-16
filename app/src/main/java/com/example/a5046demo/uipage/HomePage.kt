@@ -26,181 +26,116 @@ import com.example.a5046demo.viewmodel.WeatherViewModel
 import androidx.compose.runtime.*
 
 @Composable
-fun EnhancedHomeScreen(userName: String = "John Doe", weight: String = "68.5 kg") {
-    Scaffold(
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                contentColor = Color(0xFF2E8B57)
-            ) {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home", color = Color(0xFF2E8B57)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF2E8B57),
-                        unselectedTextColor = Color(0xFF2E8B57)
-                    )
-                )
-                NavigationBarItem(
-                    selected = false, // 或 true 取决于你是否当前页面
-                    onClick = { /* Navigate to Record */ },
-                    icon = { Text("📝", fontSize = 20.sp) }, // 或者用 Icon(Icons.Default.Edit, ...)
-                    label = { Text("Record", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
+fun HomeScreen(userName: String = "John Doe", weight: String = "68.5 kg") {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
 
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /* Navigate to History screen */ },
-                    icon = { Text("📚", fontSize = 20.sp) }, // 你也可以改成 Icons.Default.List 或自定义图标
-                    label = { Text("History", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("Profile", color = Color(0xFF888888)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        selectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF2E8B57),
-                        unselectedIconColor = Color(0xFF888888),
-                        unselectedTextColor = Color(0xFF888888)
-                    )
-                )
-            }
-        }
-    ) { padding ->
-        Column(
+        // Top Profile Avatar + Welcome
+        Row(
             modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(Color.White)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-            // Top Profile Avatar + Welcome
-            Row(
+            Image(
+                painter = painterResource(id = R.drawable.asd),
+                contentDescription = "User Avatar",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.asd), // 换成你的文件名
-                    contentDescription = "User Avatar",
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(50))
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text("Welcome back,", fontSize = 14.sp, color = Color.Gray)
-                    Text(userName, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E8B57))
-                }
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(50))
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text("Welcome back,", fontSize = 14.sp, color = Color.Gray)
+                Text(userName, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E8B57))
             }
-
-            // Highlighted Kcal Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Today, 14 Apr", fontSize = 16.sp, color = Color.White)
-                    Text("1883 Kcal", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
-                        Text("Track your activity", color = Color(0xFF2E8B57))
-                    }
-                }
-            }
-
-            // Top Exercises
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text("Today's Breakdown", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    ExerciseCard(title = "Dumbbell", kcal = 628, color = Color(0xFF2E8B57))
-                    ExerciseCard(title = "Treadmill", kcal = 235, color = Color(0xFF000000))
-                    ExerciseCard(title = "Rope", kcal = 432, color = Color(0xFF888888))
-                }
-            }
-
-            // Weekly Workout Card with Weight
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            modifier = Modifier.size(40.dp),
-                            color = Color(0xFFFF8A80),
-                            shape = RoundedCornerShape(50)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text("⚡", color = Color.White, fontSize = 20.sp)
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text("Body Weight", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            Text("Current: $weight", fontSize = 14.sp, color = Color.White)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text("Next exercise", fontSize = 12.sp, color = Color.Gray)
-                            Text("Lower Strength", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                        }
-                    }
-                }
-            }
-
-            WeatherCard()
-
-            Spacer(modifier = Modifier.height(100.dp))
         }
+
+        // Highlighted Kcal Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Today, 14 Apr", fontSize = 16.sp, color = Color.White)
+                Text("1883 Kcal", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
+                    Text("Track your activity", color = Color(0xFF2E8B57))
+                }
+            }
+        }
+
+        // Top Exercises
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text("Today's Breakdown", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                ExerciseCard(title = "Dumbbell", kcal = 628, color = Color(0xFF2E8B57))
+                ExerciseCard(title = "Treadmill", kcal = 235, color = Color(0xFF000000))
+                ExerciseCard(title = "Rope", kcal = 432, color = Color(0xFF888888))
+            }
+        }
+
+        // Weekly Workout Card with Weight
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        modifier = Modifier.size(40.dp),
+                        color = Color(0xFFFF8A80),
+                        shape = RoundedCornerShape(50)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text("⚡", color = Color.White, fontSize = 20.sp)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text("Body Weight", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("Current: $weight", fontSize = 14.sp, color = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text("Next exercise", fontSize = 12.sp, color = Color.Gray)
+                        Text("Lower Strength", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            }
+        }
+
+        WeatherCard()
+
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
@@ -260,6 +195,6 @@ fun WeatherCard(viewModel: WeatherViewModel = viewModel()) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewEnhancedHomeScreen() {
-    EnhancedHomeScreen()
+fun PreviewHomeScreen() {
+    HomeScreen()
 }
