@@ -12,9 +12,12 @@ import androidx.navigation.compose.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.a5046demo.viewmodel.ExerciseViewModel
+import com.example.a5046demo.viewmodel.ExerciseViewModelFactory
+
 
 @Composable
-fun StartAppNavigation() {
+fun StartAppNavigation(viewModel: ExerciseViewModel) {
     // 页面数据类
     data class NavRoute(val route: String, val icon: ImageVector, val label: String)
 
@@ -67,7 +70,7 @@ fun StartAppNavigation() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen() }
-            composable("record") { RecordScreen() }
+            composable("record") {  RecordScreen(viewModel = viewModel) }
             composable("history") { HistoryScreen() }
             composable("profile") { ProfileScreen() }
         }

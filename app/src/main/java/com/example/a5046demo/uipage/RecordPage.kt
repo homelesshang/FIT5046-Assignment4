@@ -1,6 +1,7 @@
 package com.example.a5046demo.uipage
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -14,17 +15,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.a5046demo.data.ExerciseRecord
+import com.example.a5046demo.viewmodel.ExerciseViewModel
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordScreen(
-    onConfirm: () -> Unit = {}
+    viewModel: ExerciseViewModel
 ) {
-    var selectedIntensity by remember { mutableStateOf("Medium") }
-    var dateInput by remember { mutableStateOf("") }
     val exerciseTypes = listOf("Cardio", "Strength", "Yoga", "HIIT", "Pilates")
-    var expanded by remember { mutableStateOf(false) }
     var selectedExercise by remember { mutableStateOf(exerciseTypes[0]) }
+    var expanded by remember { mutableStateOf(false) }
+    var dateInput by remember { mutableStateOf("") }
+    var durationInput by remember { mutableStateOf("") }
+    var selectedIntensity by remember { mutableStateOf("Medium") }
+    val records by viewModel.allRecords.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
@@ -155,7 +161,23 @@ fun RecordScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = onConfirm,
+                onClick = {
+                    if (dateInput.isNotBlank() && durationInput.isNotBlank()) {
+                        val record = ExerciseRecord(
+                            exerciseType = selectedExercise,
+                            date = dateInput,
+                            duration = durationInput.toIntOrNull() ?: 0,
+                            intensity = selectedIntensity
+                        )
+                        viewModel.insertRecord(record)
+
+                        // Clear inputs
+                        dateInput = ""
+                        durationInput = ""
+                        selectedExercise = exerciseTypes[0]
+                        selectedIntensity = "Medium"
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -165,13 +187,34 @@ fun RecordScreen(
                 Text("✅ CONFIRM", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Display saved records
+            Text("📖 Workout History", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                items(records) { rec ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEFFFEF))
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text("🏃 ${rec.exerciseType} | 💪 ${rec.intensity}")
+                            Text("📅 ${rec.date}   ⏱ ${rec.duration} mins", fontSize = 13.sp, color = Color.Gray)
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewRecordScreen() {
-    RecordScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewRecordScreen() {
+//    RecordScreen()
+//}
