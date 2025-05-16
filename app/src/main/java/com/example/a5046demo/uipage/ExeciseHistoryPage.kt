@@ -12,68 +12,57 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.a5046demo.viewmodel.ExerciseViewModel
+import com.example.a5046demo.data.ExerciseRecord
 
-data class ExerciseRecord(
-    val id: Int,
-    val date: String,
-    val type: String,
-    val duration: String,
-    val caloriesBurned: Int
-)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen() {
-    val exerciseList = remember {
-        mutableStateListOf(
-            ExerciseRecord(1, "2025-04-14", "Jogging", "30 mins", 220),
-            ExerciseRecord(2, "2025-04-13", "Yoga", "45 mins", 150),
-            ExerciseRecord(3, "2025-04-12", "Jump Rope", "20 mins", 180)
-        )
-    }
+fun ExerciseHistoryScreen(viewModel: ExerciseViewModel) {
+    val records by viewModel.allRecords.collectAsState(initial = emptyList())
+    var editingRecord by remember { mutableStateOf<ExerciseRecord?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("📖 Exercise History", color = Color.White, fontWeight = FontWeight.Bold)
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF2E8B57))
+            )
+        }
+    ) { padding ->
         LazyColumn(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Text(
-                    text = "📖 Exercise History",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2E8B57),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            items(exerciseList, key = { it.id }) { record ->
+            items(records, key = { it.id }) { record ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F2F1)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F2F1))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("📅 Date: ${record.date}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text("🏃 Type: ${record.type}", fontSize = 14.sp)
-                        Text("⏱ Duration: ${record.duration}", fontSize = 14.sp)
-                        Text("🔥 Calories Burned: ${record.caloriesBurned} kcal", fontSize = 14.sp)
+                        Text("📅 ${record.date}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text("🏃 Type: ${record.exerciseType}")
+                        Text("⏱ Duration: ${record.duration} min")
+                        Text("💪 Intensity: ${record.intensity}")
+
                         Spacer(modifier = Modifier.height(8.dp))
+
                         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             TextButton(onClick = {
-                                val index = exerciseList.indexOf(record)
-                                if (index != -1) {
-                                    exerciseList[index] = record.copy(type = "${record.type} (edited)")
-                                }
+                                // 打开编辑对话框
+                                editingRecord = record
                             }) {
                                 Text("✏️ Edit")
                             }
+
                             TextButton(onClick = {
-                                exerciseList.remove(record)
+                                viewModel.deleteRecord(record)
                             }) {
                                 Text("🗑 Delete", color = Color.Red)
                             }
@@ -82,28 +71,69 @@ fun HistoryScreen() {
                 }
             }
         }
+    }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = {
-                // TODO: Replace with navigation or dialog
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57))
-        ) {
-            Text("📊 View Recent Progress", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
+    // 👇 编辑弹窗
+    if (editingRecord != null) {
+        EditRecordDialog(
+            record = editingRecord!!,
+            onDismiss = { editingRecord = null },
+            onConfirm = { updated ->
+                viewModel.updateRecord(updated)
+                editingRecord = null
+            }
+        )
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PreviewExerciseHistoryCrudScreen() {
-    HistoryScreen()
+fun EditRecordDialog(
+    record: ExerciseRecord,
+    onDismiss: () -> Unit,
+    onConfirm: (ExerciseRecord) -> Unit
+) {
+    var updatedType by remember { mutableStateOf(record.exerciseType) }
+    var updatedDuration by remember { mutableStateOf(record.duration.toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                val updated = record.copy(
+                    exerciseType = updatedType,
+                    duration = updatedDuration.toIntOrNull() ?: record.duration
+                )
+                onConfirm(updated)
+            }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+        title = { Text("Edit Record") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = updatedType,
+                    onValueChange = { updatedType = it },
+                    label = { Text("Exercise Type") }
+                )
+                OutlinedTextField(
+                    value = updatedDuration,
+                    onValueChange = { updatedDuration = it },
+                    label = { Text("Duration (minutes)") },
+
+                )
+            }
+        }
+    )
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewExerciseHistoryCrudScreen() {
+//    ExerciseHistoryScreen(viewModel = /* 传一个 mock ViewModel 或用 fake 数据 */)
+//}

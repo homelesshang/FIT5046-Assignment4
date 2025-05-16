@@ -71,7 +71,7 @@ fun StartAppNavigation(viewModel: ExerciseViewModel) {
         ) {
             composable("home") { HomeScreen() }
             composable("record") {  RecordScreen(viewModel = viewModel) }
-            composable("history") { HistoryScreen() }
+            composable("history") { ExerciseHistoryScreen(viewModel = viewModel) }
             composable("profile") { ProfileScreen() }
         }
     }
