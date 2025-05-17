@@ -1,10 +1,9 @@
 package com.example.a5046demo.uipage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,12 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.a5046demo.data.ExerciseRecord
 import com.example.a5046demo.viewmodel.ExerciseViewModel
-import androidx.compose.foundation.lazy.items
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Locale
+import java.util.Date
+import androidx.compose.ui.res.painterResource
+import com.example.a5046demo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,14 +105,58 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                     }
 
                     // Date
+                    var dateInput by remember { mutableStateOf("2025-04-16") }
+                    var showDatePicker by remember { mutableStateOf(false) }
+                    val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+                    val datePickerState = rememberDatePickerState(
+                        initialSelectedDateMillis = Instant.now().toEpochMilli()
+                    )
+
                     OutlinedTextField(
                         value = dateInput,
-                        onValueChange = { dateInput = it },
+                        onValueChange = {},
+                        readOnly = true,
                         label = { Text("📅 Date") },
                         placeholder = { Text("e.g., 2025-04-16") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDatePicker = true },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.calendar_icon),
+                                contentDescription = "Pick Date",
+                                modifier = Modifier
+                                    .clickable { showDatePicker = true }
+                                    .size(24.dp),
+                                tint = Color(0xFF2E8B57)
+                            )
+                        },
                         singleLine = true
                     )
+
+                    if (showDatePicker) {
+                        DatePickerDialog(
+                            onDismissRequest = { showDatePicker = false },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    val millis = datePickerState.selectedDateMillis
+                                    if (millis != null) {
+                                        dateInput = formatter.format(Date(millis))
+                                    }
+                                    showDatePicker = false
+                                }) {
+                                    Text("OK")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDatePicker = false }) {
+                                    Text("Cancel")
+                                }
+                            }
+                        ) {
+                            DatePicker(state = datePickerState)
+                        }
+                    }
 
                     // Duration
                     OutlinedTextField(
@@ -162,13 +209,13 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                 )
                                 viewModel.insertRecord(record)
 
-                                // 清空输入
+
                                 dateInput = ""
                                 durationInput = ""
                                 selectedExercise = exerciseTypes[0]
                                 selectedIntensity = "Medium"
 
-                                onConfirm() // 如果需要跳转到 history，可以在导航中传入
+                                onConfirm()
                             }
                         },
                         modifier = Modifier

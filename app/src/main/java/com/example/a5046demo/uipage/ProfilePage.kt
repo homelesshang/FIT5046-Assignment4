@@ -1,6 +1,7 @@
 package com.example.a5046demo.uipage
 
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,8 +104,10 @@ fun ProfileScreen(navController: NavController,
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                val context = LocalContext.current
+
                 Button(
-                    onClick = { /* TODO: handle logout */ },
+                    onClick = { (context as? Activity)?.finishAffinity()  },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
                     modifier = Modifier
                         .fillMaxWidth()

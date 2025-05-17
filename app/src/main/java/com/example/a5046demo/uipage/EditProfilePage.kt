@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -22,8 +23,12 @@ import com.example.a5046demo.R
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
+import java.util.Date
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Locale
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
     onBackClick: () -> Unit = {}
@@ -129,19 +134,34 @@ fun EditProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+
+                var birthday by remember { mutableStateOf("2000-01-01") }
+                var showDatePicker by remember { mutableStateOf(false) }
+
+
+                val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+                val datePickerState = rememberDatePickerState(
+                    initialSelectedDateMillis = Instant.now().toEpochMilli()
+                )
+
                 OutlinedTextField(
                     value = birthday,
-                    onValueChange = { birthday = it },
+                    onValueChange = {},
+                    readOnly = true,
                     label = { Text("Birthday") },
                     trailingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.calendar_icon),
                             contentDescription = "Pick Date",
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier
+                                .clickable { showDatePicker = true }
+                                .size(24.dp),
                             tint = green
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = green,
                         unfocusedBorderColor = green,
@@ -149,6 +169,30 @@ fun EditProfileScreen(
                         cursorColor = green
                     )
                 )
+
+                if (showDatePicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val millis = datePickerState.selectedDateMillis
+                                if (millis != null) {
+                                    birthday = formatter.format(Date(millis)) // set birthday
+                                }
+                                showDatePicker = false
+                            }) {
+                                Text("OK")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDatePicker = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -164,6 +208,17 @@ fun EditProfileScreen(
                         cursorColor = green
                     )
                 )
+
+                Button(
+                    onClick = { /* TODO: implement save logic */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = green),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp)
+                        .height(50.dp)
+                ) {
+                    Text("Save Changes", color = Color.White)
+                }
             }
         }
     }
