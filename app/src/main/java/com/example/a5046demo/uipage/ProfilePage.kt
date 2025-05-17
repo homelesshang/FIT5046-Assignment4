@@ -22,26 +22,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.a5046demo.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    userName: String = "John Doe",
-    location: String = "Melbourne, Australia",
-    weight: String = "60kg",
-    height: String = "175cm",
-    intake: String = "2168kcal",
-    bmi: String = "19.6",
-    burned: String = "273 kcal"
+fun ProfileScreen(navController: NavController,
+                  userName: String = "John Doe",
+                  location: String = "Melbourne, Australia",
+                  weight: String = "60kg",
+                  height: String = "175cm",
+                  intake: String = "2168kcal",
+                  bmi: String = "19.6",
+                  burned: String = "273 kcal"
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {},
                 actions = {
-                    TextButton(onClick = { /* TODO: handle edit profile */ }) {
+                    TextButton(onClick = { navController.navigate("edit_profile") }) {
                         Text("Edit", color = Color(0xFF2E8B57), fontWeight = FontWeight.Bold)
                     }
                 },
@@ -140,10 +141,4 @@ fun InfoCardGreen(title: String, value: String, icon: String) {
             Text(value, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF2E8B57))
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewProfileScreen() {
-    ProfileScreen()
 }

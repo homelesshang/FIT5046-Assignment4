@@ -18,10 +18,10 @@ import com.example.a5046demo.viewmodel.ExerciseViewModelFactory
 
 @Composable
 fun StartAppNavigation(viewModel: ExerciseViewModel) {
-    // 页面数据类
+
     data class NavRoute(val route: String, val icon: ImageVector, val label: String)
 
-    // 定义底部栏页面
+
     val navRoutes = listOf(
         NavRoute("home", Icons.Filled.Home, "Home"),
         NavRoute("record", Icons.Filled.Edit, "Record"),
@@ -64,16 +64,11 @@ fun StartAppNavigation(viewModel: ExerciseViewModel) {
             }
         }
     ) { innerPadding ->
-        NavHost(
+        AppNavHost(
             navController = navController,
-            startDestination = "home",
+            viewModel = viewModel,
             modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("home") { HomeScreen() }
-            composable("record") {  RecordScreen(viewModel = viewModel) }
-            composable("history") { ExerciseHistoryScreen(viewModel = viewModel) }
-            composable("profile") { ProfileScreen() }
-        }
+        )
     }
 }
 
