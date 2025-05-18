@@ -5,22 +5,27 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [ExerciseRecord::class], version = 1, exportSchema = false)
-abstract class ExerciseDatabase : RoomDatabase() {
-
+@Database(
+    entities = [User::class, ExerciseRecord::class],
+    version = 1,
+    exportSchema = false
+)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
     abstract fun exerciseRecordDao(): ExerciseRecordDao
 
     companion object {
         @Volatile
-        private var INSTANCE: ExerciseDatabase? = null
+        private var INSTANCE: AppDatabase? = null
 
-        fun getDatabase(context: Context): ExerciseDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    ExerciseDatabase::class.java,
-                    "exercise_database"
-                ).build()
+                    AppDatabase::class.java,
+                    "fitnest_database"
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

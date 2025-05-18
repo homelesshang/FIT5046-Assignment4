@@ -1,145 +1,237 @@
-//package com.example.a5046demo.uipage.auth
-//
-//import androidx.compose.foundation.layout.Arrangement
-//import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.Row
-//import androidx.compose.foundation.layout.Spacer
-//import androidx.compose.foundation.layout.fillMaxSize
-//import androidx.compose.foundation.layout.fillMaxWidth
-//import androidx.compose.foundation.layout.height
-//import androidx.compose.foundation.layout.padding
-//import androidx.compose.foundation.layout.size
-//import androidx.compose.foundation.layout.width
-//import androidx.compose.material3.Button
-//import androidx.compose.material3.ButtonDefaults
-//import androidx.compose.material3.Divider
-//import androidx.compose.material3.ExperimentalMaterial3Api
-//import androidx.compose.material3.Icon
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.OutlinedTextField
-//import androidx.compose.material3.Text
-//import androidx.compose.material3.TextButton
-//import androidx.compose.material3.TextFieldDefaults
-//import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.getValue
-//import androidx.compose.runtime.mutableStateOf
-//import androidx.compose.runtime.remember
-//import androidx.compose.runtime.setValue
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.res.painterResource
-//import androidx.compose.ui.text.font.FontWeight
-//import androidx.compose.ui.text.input.PasswordVisualTransformation
-//import androidx.compose.ui.tooling.preview.Preview
-//import androidx.compose.ui.unit.dp
-//
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun LoginScreen() {
-//    var username by remember { mutableStateOf("") }
-//    var password by remember { mutableStateOf("") }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        // Title
-//        Text(
-//            text = "Member Login",
-//            style = MaterialTheme.typography.titleLarge,
-//            color = Color(0xFF2E8B57),
-//            fontWeight = FontWeight.Bold
-//        )
-//
-//        Spacer(modifier = Modifier.height(32.dp))
-//
-//        // Username TextField with leading icon
-//        OutlinedTextField(
-//            value = username,
-//            onValueChange = { username = it },
-//            label = { Text("Username") },
-//
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color(0xFF2E8B57),
-//                focusedLabelColor = Color(0xFF2E8B57)
-//            ),
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Password TextField with leading icon
-//        OutlinedTextField(
-//            value = password,
-//            onValueChange = { password = it },
-//            label = { Text("Password") },
-//            trailingIcon = {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.eye), // Replace with your icon resource
-//                    contentDescription = "Password Icon",
-//                    tint = Color.Gray,
-//                    modifier = Modifier.size(24.dp)
-//                )
-//            },
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color(0xFF2E8B57),
-//                focusedLabelColor = Color(0xFF2E8B57)
-//            ),
-//            modifier = Modifier.fillMaxWidth(),
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//
-//        Spacer(modifier = Modifier.height(32.dp))
-//
-//        // Login Button
-//        Button(
-//            onClick = { /* Handle login logic here */ },
-//            modifier = Modifier.fillMaxWidth(),
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAAF0D1)) // 浅绿色
-//        ) {
-//            Text("Login")
-//        }
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        Divider(color = Color(0xFF2E8B57), thickness = 1.dp)
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Sign-up Link (TextButton)
-//        TextButton(onClick = { /* Handle navigation to sign-up */ }) {
-//            Text("Don't have an account? Sign up", color = Color(0xFF2E8B57))
-//        }
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Google Login Button
-//        Button(
-//            onClick = { /* Handle Google login logic here */ },
-//            modifier = Modifier.fillMaxWidth(),
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4)) // Google Blue
-//        ) {
-//            // Google logo icon
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.google), // 使用Google图标资源
-//                    contentDescription = "Google Login",
-//                    tint = Color.White,
-//                    modifier = Modifier.size(24.dp)
-//                )
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Text("Sign in with Google", color = Color.White)
-//            }
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewLoginScreen() {
-//    LoginScreen()
-//}
+package com.example.a5046demo.uipage.auth
+
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.a5046demo.components.*
+import com.example.a5046demo.uipage.*
+import com.example.a5046demo.uipage.navigation.AuthRoutes
+import com.example.a5046demo.uipage.navigation.HomePageRoutes
+import com.example.a5046demo.viewmodel.AuthState
+import com.example.a5046demo.viewmodel.AuthViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
+
+private const val TAG = "LoginScreen"
+
+@Composable
+fun LoginScreen(
+    navController: NavController,
+    viewModel: AuthViewModel = viewModel(
+        factory = AuthViewModel.provideFactory(LocalContext.current)
+    )
+) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf<String?>(null) }
+
+    val context = LocalContext.current
+    val authState by viewModel.authState.collectAsState()
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        Log.d(TAG, "Google Sign In result received: resultCode=${result.resultCode}, data=${result.data}")
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                try {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    Log.d(TAG, "Processing Google Sign In result...")
+                    val account = task.getResult(ApiException::class.java)
+                    account?.email?.let { email ->
+                        Log.d(TAG, "Google Sign In success: $email")
+                        viewModel.signInWithGoogle(email)
+                    } ?: run {
+                        showError = "Failed to get email from Google account"
+                        Log.e(TAG, "No email found in Google account")
+                    }
+                } catch (e: ApiException) {
+                    val errorMessage = when (e.statusCode) {
+                        GoogleSignInStatusCodes.SIGN_IN_CANCELLED -> {
+                            Log.e(TAG, "Sign in cancelled by ApiException: ${e.statusCode}", e)
+                            "Sign-in was cancelled"
+                        }
+                        GoogleSignInStatusCodes.NETWORK_ERROR -> {
+                            Log.e(TAG, "Network error during sign in: ${e.statusCode}", e)
+                            "Network error occurred. Please check your connection"
+                        }
+                        GoogleSignInStatusCodes.INVALID_ACCOUNT -> {
+                            Log.e(TAG, "Invalid account: ${e.statusCode}", e)
+                            "Invalid Google account"
+                        }
+                        GoogleSignInStatusCodes.SIGN_IN_REQUIRED -> {
+                            Log.e(TAG, "Sign in required: ${e.statusCode}", e)
+                            "Please sign in to your Google account"
+                        }
+                        else -> {
+                            Log.e(TAG, "Unknown error during sign in: ${e.statusCode}", e)
+                            "Sign-in failed (code: ${e.statusCode})"
+                        }
+                    }
+                    showError = errorMessage
+                } catch (e: Exception) {
+                    Log.e(TAG, "Unexpected error during Google sign in", e)
+                    showError = "Unexpected error during sign-in: ${e.message}"
+                }
+            }
+            Activity.RESULT_CANCELED -> {
+                Log.d(TAG, "Google Sign In explicitly cancelled by user or system")
+                showError = "Sign-in was cancelled"
+            }
+            else -> {
+                Log.e(TAG, "Unexpected result code from Google Sign In: ${result.resultCode}")
+                showError = "Unexpected error during sign-in"
+            }
+        }
+    }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Success -> {
+                Log.d(TAG, "Authentication successful: ${(authState as AuthState.Success).message}")
+                navController.navigate(HomePageRoutes.Home) {
+                    popUpTo(AuthRoutes.Login) { inclusive = true }
+                }
+            }
+            is AuthState.Error -> {
+                showError = (authState as AuthState.Error).message
+                Log.e(TAG, "Authentication error: $showError")
+            }
+            is AuthState.Loading -> {
+                Log.d(TAG, "Authentication in progress...")
+            }
+            else -> {}
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Welcome Back!",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        FitNestTextField(
+            value = username,
+            onValueChange = {
+                username = it
+                showError = null
+            },
+            label = "Username",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FitNestTextField(
+            value = password,
+            onValueChange = {
+                password = it
+                showError = null
+            },
+            label = "Password",
+            isPassword = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            )
+        )
+
+        if (showError != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = showError!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        FitNestButton(
+            onClick = {
+                viewModel.signInWithEmailPassword(username, password)
+            },
+            text = if (authState is AuthState.Loading) "Signing in..." else "Login",
+            enabled = username.isNotBlank() &&
+                    password.isNotBlank() &&
+                    authState !is AuthState.Loading
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FitNestOutlinedButton(
+            onClick = {
+                try {
+                    Log.d(TAG, "Starting Google Sign In...")
+                    // Check if there's an existing Google sign-in
+                    val lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(context)
+                    if (lastSignedInAccount != null) {
+                        Log.d(TAG, "Found existing Google sign-in, signing out first")
+                        val signInClient = viewModel.getGoogleSignInClient(context)
+                        signInClient.signOut().addOnCompleteListener {
+                            Log.d(TAG, "Previous Google sign-in cleared")
+                            googleSignInLauncher.launch(signInClient.signInIntent)
+                        }
+                    } else {
+                        val signInClient = viewModel.getGoogleSignInClient(context)
+                        googleSignInLauncher.launch(signInClient.signInIntent)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error launching Google Sign In", e)
+                    showError = "Error starting sign-in process"
+                }
+            },
+            text = "Sign in with Google",
+            enabled = authState !is AuthState.Loading,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Google Icon",
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Sign in with Google")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(
+            onClick = { navController.navigate(AuthRoutes.Register) },
+            enabled = authState !is AuthState.Loading
+        ) {
+            Text(
+                text = "Don't have an account? Register",
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+} 

@@ -1,175 +1,226 @@
-//package com.example.a5046demo.uipage.auth
-//
-//import androidx.compose.foundation.Image
-//import androidx.compose.foundation.layout.Arrangement
-//import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.Spacer
-//import androidx.compose.foundation.layout.fillMaxSize
-//import androidx.compose.foundation.layout.fillMaxWidth
-//import androidx.compose.foundation.layout.height
-//import androidx.compose.foundation.layout.padding
-//import androidx.compose.foundation.layout.size
-//import androidx.compose.material3.Button
-//import androidx.compose.material3.ButtonDefaults
-//import androidx.compose.material3.Divider
-//import androidx.compose.material3.ExperimentalMaterial3Api
-//import androidx.compose.material3.Icon
-//import androidx.compose.material3.IconButton
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.OutlinedTextField
-//import androidx.compose.material3.Text
-//import androidx.compose.material3.TextButton
-//import androidx.compose.material3.TextFieldDefaults
-//import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.getValue
-//import androidx.compose.runtime.mutableStateOf
-//import androidx.compose.runtime.remember
-//import androidx.compose.runtime.setValue
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.res.painterResource
-//import androidx.compose.ui.text.font.FontWeight
-//import androidx.compose.ui.text.input.PasswordVisualTransformation
-//import androidx.compose.ui.tooling.preview.Preview
-//import androidx.compose.ui.unit.dp
-//import com.example.a5046demo.R
-//
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun RegisterScreen() {
-//    var username by remember { mutableStateOf("") }
-//    var password by remember { mutableStateOf("") }
-//    var confirmPassword by remember { mutableStateOf("") }
-//    var dateOfBirth by remember { mutableStateOf("") }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        Text(
-//            text = "New Member Register",
-//            style = MaterialTheme.typography.titleLarge,
-//            color = Color(0xFF2E8B57),
-//            fontWeight = FontWeight.Bold
-//        )
-//
-//        Spacer(modifier = Modifier.height(32.dp))
-//
-//        // Username Input
-//        OutlinedTextField(
-//            value = username,
-//            onValueChange = { username = it },
-//            label = { Text("Username") },
-//
-//
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color(0xFF2E8B57),
-//                focusedLabelColor = Color(0xFF2E8B57)
-//            ),
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Password Input
-//        OutlinedTextField(
-//            value = password,
-//            onValueChange = { password = it },
-//            label = { Text("Password") },
-//            trailingIcon = {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.eye), // Replace with your icon resource
-//                    contentDescription = "Password Icon",
-//                    tint = Color.Gray,
-//                    modifier = Modifier.size(24.dp)
-//                )
-//            },
-//            visualTransformation = PasswordVisualTransformation(),
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color(0xFF2E8B57),
-//                focusedLabelColor = Color(0xFF2E8B57)
-//            ),
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Confirm Password Input
-//        OutlinedTextField(
-//            value = confirmPassword,
-//            onValueChange = { confirmPassword = it },
-//            label = { Text("Confirm Password") },
-//            trailingIcon = {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.eye), // Replace with your icon resource
-//                    contentDescription = "Password Icon",
-//                    tint = Color.Gray,
-//                    modifier = Modifier.size(24.dp)
-//                )
-//            },
-//            visualTransformation = PasswordVisualTransformation(),
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color(0xFF2E8B57),
-//                focusedLabelColor = Color(0xFF2E8B57)
-//            ),
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Date of Birth Input with Calendar Icon
-//        OutlinedTextField(
-//            value = dateOfBirth,
-//            onValueChange = { /* No direct input, only selection */ },
-//            label = { Text("Date of Birth") },
-//            readOnly = true,
-//            trailingIcon = {
-//                IconButton(onClick = { /* 日期选择逻辑可以放这里 */ }) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.calendar_icon), // 使用你的日历图标资源
-//                        contentDescription = "Calendar Icon",
-//                        modifier = Modifier.size(24.dp)
-//                    )
-//                }
-//            },
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color(0xFF2E8B57),
-//                focusedLabelColor = Color(0xFF2E8B57)
-//            ),
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//
-//        Spacer(modifier = Modifier.height(32.dp))
-//
-//        // Register Button
-//        Button(
-//            onClick = { /* 处理注册逻辑 */ },
-//            modifier = Modifier.fillMaxWidth(),
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAAF0D1))
-//        ) {
-//            Text("Register")
-//        }
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Divider
-//        Divider(color = Color(0xFF2E8B57), thickness = 1.dp)
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Login Navigation Link
-//        TextButton(onClick = { /* 处理跳转到登录界面 */ }) {
-//            Text("Already have an account? Login", color = Color(0xFF2E8B57))
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewRegisterScreen() {
-//    RegisterScreen()
-//}
+package com.example.a5046demo.uipage.auth
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.a5046demo.components.*
+import com.example.a5046demo.uipage.*
+import com.example.a5046demo.viewmodel.AuthState
+import com.example.a5046demo.viewmodel.AuthViewModel
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import androidx.compose.ui.platform.LocalContext
+import com.example.a5046demo.uipage.navigation.AuthRoutes
+import com.example.a5046demo.uipage.navigation.HomePageRoutes
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RegisterScreen(
+    navController: NavController,
+    viewModel: AuthViewModel = viewModel(
+        factory = AuthViewModel.provideFactory(LocalContext.current)
+    )
+) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var dateOfBirth by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var showError by remember { mutableStateOf<String?>(null) }
+
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val datePickerState = rememberDatePickerState()
+    val authState by viewModel.authState.collectAsState()
+
+    // Password validation
+    LaunchedEffect(password, confirmPassword) {
+        passwordError = when {
+            password.length < 6 -> "Password must be at least 6 characters"
+            password != confirmPassword && confirmPassword.isNotEmpty() -> "Passwords do not match"
+            else -> null
+        }
+    }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Success -> {
+                navController.navigate(HomePageRoutes.Home) {
+                    popUpTo(AuthRoutes.Register) { inclusive = true }
+                }
+            }
+            is AuthState.Error -> {
+                showError = (authState as AuthState.Error).message
+            }
+            else -> {}
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Create Account",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        FitNestTextField(
+            value = username,
+            onValueChange = {
+                username = it
+                showError = null
+            },
+            label = "Username",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FitNestTextField(
+            value = password,
+            onValueChange = {
+                password = it
+                showError = null
+            },
+            label = "Password",
+            isPassword = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FitNestTextField(
+            value = confirmPassword,
+            onValueChange = {
+                confirmPassword = it
+                showError = null
+            },
+            label = "Confirm Password",
+            isPassword = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        if (passwordError != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = passwordError!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        if (showError != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = showError!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = dateOfBirth,
+            onValueChange = { },
+            label = { Text("Date of Birth") },
+            enabled = false,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { showDatePicker = true },
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        )
+
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val localDate = Instant.ofEpochMilli(millis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                dateOfBirth = localDate.format(dateFormatter)
+                            }
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    showModeToggle = false
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        FitNestButton(
+            onClick = {
+                viewModel.register(username, password, dateOfBirth)
+            },
+            text = if (authState is AuthState.Loading) "Registering..." else "Register",
+            enabled = username.isNotBlank() &&
+                    password.isNotBlank() &&
+                    confirmPassword.isNotBlank() &&
+                    passwordError == null &&
+                    dateOfBirth.isNotBlank() &&
+                    authState !is AuthState.Loading
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(
+            onClick = { navController.navigate(AuthRoutes.Login) },
+            enabled = authState !is AuthState.Loading
+        ) {
+            Text(
+                text = "Already have an account? Login",
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
