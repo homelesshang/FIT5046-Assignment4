@@ -20,6 +20,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.material.icons.filled.Cached
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.input.pointer.pointerInput
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,31 +51,37 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // 顶部标题栏 + 关闭按钮
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Recent Progress 📈",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2E8B57)
-                )
-                IconButton(
-                    onClick = onClose,
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = Color.Gray
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Recent Progress",
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFF2E8B57),
+                        fontWeight = FontWeight.Bold
                     )
-                }
-            }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /* Handle back */ }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        // TODO: Handle share action (e.g. open share sheet)
+                    }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color(0xFF2E8B57)
+                )
+            )
+
 
             // 欢迎语 + 总结语
             Text(
-                text = "You're on track this week! Keep it up 💪 🏃‍♂️ 🍏",
+                text = "Your Weekly Summary",
                 fontSize = 14.sp,
                 color = Color(0xFF2E8B57),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -67,8 +91,10 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
             OverviewStatCard(
                 icon = Icons.Default.MoreVert,
                 title = "Weight 🃏",
-                value = "68.5 kg",
+                value = 68.5f,
                 barData = listOf(67.8f, 68.0f, 68.2f, 68.5f, 68.4f, 68.3f, 68.5f),
+                unitA = "KG",
+                unitB = "LBS",
                 labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
             )
 
@@ -76,8 +102,10 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
             OverviewStatCard(
                 icon = Icons.Default.MoreVert,
                 title = "Calories 🔥",
-                value = "2,000+",
+                value = 2000f,
                 barData = listOf(1200f, 1400f, 1300f, 1800f, 2200f, 1900f, 2000f),
+                unitA = "Calories",
+                unitB = "KJ",
                 labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
             )
 
@@ -85,8 +113,10 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
             OverviewStatCard(
                 icon = Icons.Default.MoreVert,
                 title = "Workout Time ⏱️",
-                value = "45 min",
+                value = 45f,
                 barData = listOf(20f, 30f, 15f, 60f, 45f, 50f, 40f),
+                unitA = "Mins",
+                unitB = "Hours",
                 labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
             )
         }
@@ -97,16 +127,36 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
 fun OverviewStatCard(
     icon: ImageVector,
     title: String,
-    value: String,
+    value: Float,
     barData: List<Float>,
     labels: List<String>,
+    unitA: String,
+    unitB: String,
     containerColor: Color = Color(0xFFD0F0C0),
-    barColor: Color = Color(0xFF2E8B57)
-) {
+    barColor: Color = Color(0xFF2E8B57),
+
+    ) {
+    var useAltUnit by remember { mutableStateOf(false) }
+    val max = barData.maxOrNull()?.takeIf { it > 0 } ?: 1f
+    val displayedUnit = if (useAltUnit) unitB else unitA
+    var showBack by remember { mutableStateOf(false) }
+    val convertedValue = if (useAltUnit) {
+        when (title) {
+            "Weight 🃏" -> String.format("%.1f %s", value * 2.2f, unitB) //kg convert lbs
+            "Workout Time ⏱️" -> String.format("%.1f %s", value / 60f, unitB) //min convert hour
+            "Calories 🔥" -> String.format("%.0f %s", value * 4.184f, unitB) // kcal convert KJ
+            else -> String.format("%.1f %s", value, unitB)
+        }
+    } else {
+        String.format("%.1f %s", value, unitA)
+    }
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(200.dp)
+            .clickable { showBack = !showBack },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor)
     ) {
@@ -127,55 +177,151 @@ fun OverviewStatCard(
                         color = Color.White.copy(alpha = 0.5f),
                         modifier = Modifier.size(32.dp)
                     ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = barColor,
-                            modifier = Modifier.padding(6.dp)
-                        )
+                        IconButton(
+                            onClick = {
+                                useAltUnit = !useAltUnit
+                            },
+                            modifier = Modifier.pointerInput(32.dp) {} // prevent click-through
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Cached,
+                                contentDescription = "Switch Unit",
+                                tint = barColor
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(title, fontWeight = FontWeight.SemiBold, color = barColor)
                 }
-                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu", tint = barColor)
             }
 
-            Text(
-                text = value,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = barColor
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                val max = barData.maxOrNull()?.takeIf { it > 0 } ?: 1f
-                barData.forEach { item ->
-                    Canvas(
+            AnimatedContent(
+                targetState = showBack,
+                label = "CardFlip"
+            ) { isBack ->
+                if (isBack) {
+                    Text(
+                        text = when (title) {
+                            "Weight 🃏" -> "You are 5.0 kg lighter than last week"
+                            "Calories 🔥" -> "You averaged 800 kcal/day last week"
+                            "Workout Time ⏱️" -> "Workout increased by 20%"
+                            else -> "Keep up the good work!"
+                        },
+                        color = barColor,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
                         modifier = Modifier
-                            .width(6.dp)
-                            .fillMaxHeight(fraction = item / max)
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        drawRoundRect(
-                            color = barColor,
-                            size = Size(size.width, size.height),
-                            cornerRadius = CornerRadius(6f, 6f)
+                        Text(
+                            text = convertedValue,
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = barColor
                         )
-                    }
-                }
-            }
+                        if (title == "Weight 🃏") {
+                            AndroidView(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(80.dp),
+                                factory = { context ->
+                                    LineChart(context).apply {
+                                        val entries = barData.mapIndexed { index, value ->
+                                            Entry(index.toFloat(), value)
+                                        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                labels.forEach {
-                    Text(it, fontSize = 12.sp, color = Color.Gray)
+                                        val dataSet = LineDataSet(entries, "Weight").apply {
+                                            color = android.graphics.Color.parseColor("#2E8B57")
+                                            setCircleColor(android.graphics.Color.parseColor("#2E8B57"))
+                                            valueTextColor = android.graphics.Color.TRANSPARENT
+                                            lineWidth = 2f
+                                            circleRadius = 3f
+                                            mode = LineDataSet.Mode.CUBIC_BEZIER
+                                        }
+
+                                        data = LineData(dataSet)
+
+                                        xAxis.apply {
+                                            position = XAxis.XAxisPosition.BOTTOM
+                                            valueFormatter = IndexAxisValueFormatter(labels)
+                                            granularity = 1f
+                                            setDrawGridLines(false)
+                                            textColor = android.graphics.Color.GRAY
+                                        }
+
+                                        //axisLeft.setDrawGridLines(false)
+                                        //axisLeft.textColor = android.graphics.Color.GRAY
+                                        axisLeft.apply {
+                                            setDrawGridLines(false)              // Remove horizontal grid lines
+                                            textColor = android.graphics.Color.GRAY
+                                            textSize =
+                                                10f                       // Smaller font size
+                                            setLabelCount(
+                                                3,
+                                                true
+                                            )              // Limit to 3 clean labels
+                                            axisLineColor =
+                                                android.graphics.Color.TRANSPARENT // Hide Y axis line
+                                        }
+
+                                        axisRight.isEnabled = false
+                                        description.isEnabled = false
+                                        legend.isEnabled = false
+                                        animateX(1000)
+                                    }
+                                }
+                            )
+                        } else {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp),
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    barData.forEach { item ->
+                                        Box(
+                                            modifier = Modifier
+                                                .width(10.dp)
+                                                .fillMaxHeight(fraction = item / max),
+                                            contentAlignment = Alignment.BottomCenter
+                                        ) {
+                                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                                drawRoundRect(
+                                                    color = barColor,
+                                                    size = size,
+                                                    cornerRadius = CornerRadius(6f, 6f)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Labels row, now guaranteed to be inside the chart area
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    labels.forEach {
+                                        Text(it, fontSize = 12.sp, color = Color.Gray)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -187,3 +333,4 @@ fun OverviewStatCard(
 fun PreviewGreenStatsPageWithHeader() {
     GreenStatsPageWithHeader()
 }
+
