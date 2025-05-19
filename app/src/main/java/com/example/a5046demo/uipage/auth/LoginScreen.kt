@@ -1,6 +1,7 @@
 package com.example.a5046demo.uipage.auth
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,20 +33,23 @@ private const val TAG = "LoginScreen"
 
 @Composable
 fun LoginScreen(
+
+
     navController: NavController,
-    viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModel.provideFactory(LocalContext.current)
-    )
+    viewModel: AuthViewModel = viewModel()
 ) {
-    var username by remember { mutableStateOf("") }
+
+    var Email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     val authState by viewModel.authState.collectAsState()
 
+
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
+
     ) { result ->
         Log.d(TAG, "Google Sign In result received: resultCode=${result.resultCode}, data=${result.data}")
         when (result.resultCode) {
@@ -102,9 +106,9 @@ fun LoginScreen(
     }
 
     LaunchedEffect(authState) {
-        when (authState) {
+        when (val state = authState) {
             is AuthState.Success -> {
-                Log.d(TAG, "Authentication successful: ${(authState as AuthState.Success).message}")
+
                 navController.navigate(HomePageRoutes.Home) {
                     popUpTo(AuthRoutes.Login) { inclusive = true }
                 }
@@ -136,12 +140,12 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         FitNestTextField(
-            value = username,
+            value = Email,
             onValueChange = {
-                username = it
+                Email = it
                 showError = null
             },
-            label = "Username",
+            label = "Email",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -177,10 +181,10 @@ fun LoginScreen(
 
         FitNestButton(
             onClick = {
-                viewModel.signInWithEmailPassword(username, password)
+                viewModel.signInWithEmailPassword(Email, password)
             },
             text = if (authState is AuthState.Loading) "Signing in..." else "Login",
-            enabled = username.isNotBlank() &&
+            enabled = Email.isNotBlank() &&
                     password.isNotBlank() &&
                     authState !is AuthState.Loading
         )

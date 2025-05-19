@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object WeatherService {
     val api: WeatherApi by lazy {
         Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/data/2.5/")  // 注意末尾有 /
+            .baseUrl("https://api.openweathermap.org/data/2.5/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(WeatherApi::class.java)

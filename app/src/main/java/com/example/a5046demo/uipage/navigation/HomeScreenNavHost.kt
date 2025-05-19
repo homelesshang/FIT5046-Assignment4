@@ -1,5 +1,8 @@
 package com.example.a5046demo.uipage.navigation
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -11,6 +14,7 @@ import com.example.a5046demo.uipage.HomeScreen
 import com.example.a5046demo.uipage.ProfileScreen
 import com.example.a5046demo.uipage.RecordScreen
 import com.example.a5046demo.viewmodel.ExerciseViewModel
+import com.example.a5046demo.viewmodel.UserProfileViewModel
 
 
 object HomePageRoutes {
@@ -25,6 +29,7 @@ object HomePageRoutes {
 fun MainNavHost(
     navController: NavHostController,
     viewModel: ExerciseViewModel,
+    userProfileViewModel: UserProfileViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -33,7 +38,7 @@ fun MainNavHost(
         modifier = modifier
     ) {
         composable(HomePageRoutes.Home) {
-            HomeScreen()
+            HomeScreen(viewModel = userProfileViewModel)
         }
         composable(HomePageRoutes.Record) {
             RecordScreen(viewModel = viewModel)
@@ -49,3 +54,4 @@ fun MainNavHost(
         }
     }
 }
+

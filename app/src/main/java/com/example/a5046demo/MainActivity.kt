@@ -16,23 +16,20 @@ import com.example.a5046demo.uipage.WeatherCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
 import com.example.a5046demo.uipage.*
-
+import android.util.Log
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.viewmodel.ExerciseViewModelFactory
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val viewModel: ExerciseViewModel = ViewModelProvider(
-            this,
-            ExerciseViewModelFactory(application)
-        )[ExerciseViewModel::class.java]
         setContent {
             _5046demoTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    StartAppNavigation(viewModel = viewModel) // ✅ 显示完整首页
+                    StartAppNavigation() // ✅ 显示完整首页
                 }
             }
         }

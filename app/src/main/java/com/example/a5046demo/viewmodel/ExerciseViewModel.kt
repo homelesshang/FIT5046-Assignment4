@@ -9,9 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class ExerciseViewModel(application: Application) : AndroidViewModel(application) {
+class ExerciseViewModel(application: Application, userId: String) : AndroidViewModel(application) {
+
     private val repository = ExerciseRepository(application)
-    val allRecords: Flow<List<ExerciseRecord>> = repository.allRecords
+    val allRecords: Flow<List<ExerciseRecord>> = repository.getRecordsByUser(userId)
 
     fun insertRecord(record: ExerciseRecord) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(record)

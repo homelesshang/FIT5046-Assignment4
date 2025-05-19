@@ -8,7 +8,11 @@ import kotlinx.coroutines.flow.Flow
 class ExerciseRepository(application: Application) {
 
     private val dao = AppDatabase.getDatabase(application).exerciseRecordDao()
-    val allRecords: Flow<List<ExerciseRecord>> = dao.getAllRecords()
+
+
+    fun getRecordsByUser(userId: String): Flow<List<ExerciseRecord>> {
+        return dao.getRecordsByUser(userId)
+    }
 
     suspend fun insert(record: ExerciseRecord) = dao.insertRecord(record)
     suspend fun update(record: ExerciseRecord) = dao.updateRecord(record)

@@ -24,13 +24,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.a5046demo.R
+import com.example.a5046demo.viewmodel.AuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController,
+                  authViewModel: AuthViewModel = viewModel(),
                   userName: String = "John Doe",
                   location: String = "Melbourne, Australia",
                   weight: String = "60kg",
@@ -107,7 +110,12 @@ fun ProfileScreen(navController: NavController,
                 val context = LocalContext.current
 
                 Button(
-                    onClick = { (context as? Activity)?.finishAffinity()  },
+                    onClick = {
+                        authViewModel.signOut()
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
                     modifier = Modifier
                         .fillMaxWidth()

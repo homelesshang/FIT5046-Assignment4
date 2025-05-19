@@ -24,9 +24,21 @@ import com.example.a5046demo.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a5046demo.viewmodel.WeatherViewModel
 import androidx.compose.runtime.*
+import com.example.a5046demo.viewmodel.UserProfileViewModel
 
 @Composable
-fun HomeScreen(userName: String = "John Doe", weight: String = "68.5 kg") {
+fun HomeScreen(viewModel: UserProfileViewModel) {
+    val profile by viewModel.userProfile.collectAsState(initial = null)
+    if (profile == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    val nickname = profile!!.nickname
+    val weight = "${profile!!.weight} kg"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +66,7 @@ fun HomeScreen(userName: String = "John Doe", weight: String = "68.5 kg") {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text("Welcome back,", fontSize = 14.sp, color = Color.Gray)
-                Text(userName, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E8B57))
+                Text(nickname, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E8B57))
             }
         }
 
@@ -193,8 +205,8 @@ fun WeatherCard(viewModel: WeatherViewModel = viewModel()) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomeScreen() {
-    HomeScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewHomeScreen() {
+//    HomeScreen()
+//}

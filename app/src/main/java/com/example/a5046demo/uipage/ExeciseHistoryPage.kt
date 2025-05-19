@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -30,7 +32,20 @@ fun ExerciseHistoryScreen(viewModel: ExerciseViewModel) {
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF2E8B57))
             )
-        }
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                text = { Text("📊 View Recent Progress") },
+                onClick = {
+                    // 👉 Add your navigation or logic here
+                },
+                icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
+                containerColor = Color(0xFF2E8B57),
+                contentColor = Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         LazyColumn(
             modifier = Modifier

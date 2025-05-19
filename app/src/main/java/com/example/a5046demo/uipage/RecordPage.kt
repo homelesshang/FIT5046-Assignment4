@@ -21,17 +21,25 @@ import java.util.Locale
 import java.util.Date
 import androidx.compose.ui.res.painterResource
 import com.example.a5046demo.R
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
-    val exerciseTypes = listOf("Cardio", "Strength", "Yoga", "HIIT", "Pilates")
 
+    val exerciseTypes = listOf("Cardio", "Strength", "Yoga", "HIIT", "Pilates")
     var selectedExercise by remember { mutableStateOf(exerciseTypes[0]) }
     var expanded by remember { mutableStateOf(false) }
     var dateInput by remember { mutableStateOf("") }
     var durationInput by remember { mutableStateOf("") }
     var selectedIntensity by remember { mutableStateOf("Medium") }
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    Log.d("RecordScreen", "Inserting record with userId = $userId")
+    val records by viewModel.allRecords.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
@@ -105,7 +113,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                     }
 
                     // Date
-                    var dateInput by remember { mutableStateOf("2025-04-16") }
+
                     var showDatePicker by remember { mutableStateOf(false) }
                     val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
                     val datePickerState = rememberDatePickerState(
@@ -197,7 +205,6 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                         }
                     }
 
-                    // Confirm button
                     Button(
                         onClick = {
                             if (dateInput.isNotBlank() && durationInput.isNotBlank()) {
@@ -205,7 +212,8 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     exerciseType = selectedExercise,
                                     date = dateInput,
                                     duration = durationInput.toIntOrNull() ?: 0,
-                                    intensity = selectedIntensity
+                                    intensity = selectedIntensity,
+                                    userId = userId
                                 )
                                 viewModel.insertRecord(record)
 

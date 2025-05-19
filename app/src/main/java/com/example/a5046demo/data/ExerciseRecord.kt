@@ -9,5 +9,6 @@ data class ExerciseRecord(
     val exerciseType: String,
     val date: String,
     val duration: Int,
-    val intensity: String
+    val intensity: String,
+    val userId: String
 )

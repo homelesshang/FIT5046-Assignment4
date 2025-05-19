@@ -39,6 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a5046demo.data.ExerciseRecord
 import com.example.a5046demo.viewmodel.ExerciseViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +50,7 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
     val weekDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 // Convert to map: date -> record
     val recordMap = recordList.associateBy { it.date }
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
 // Generate full week with fallbacks
     val completeRecords = weekDays.map { day ->
@@ -57,7 +59,8 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
             exerciseType = "",
             date = day,
             duration = 0,
-            intensity = ""
+            intensity = "",
+            userId = userId
         )
     }
 

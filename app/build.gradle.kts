@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,7 +54,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.6.2")
     //git chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation("com.google.firebase:firebase-auth")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.9")
@@ -63,6 +66,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.firestore.ktx)
     ksp(libs.androidx.room.compiler)
 
     // ViewModel Compose
@@ -87,6 +91,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 
 
 }

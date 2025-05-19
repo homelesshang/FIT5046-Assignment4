@@ -1,5 +1,6 @@
 package com.example.a5046demo.uipage.auth
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -31,16 +32,14 @@ import com.example.a5046demo.uipage.navigation.HomePageRoutes
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModel.provideFactory(LocalContext.current)
-    )
+    viewModel: AuthViewModel = viewModel()
 ) {
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember {                      mutableStateOf<String?>(null) }
     var showError by remember { mutableStateOf<String?>(null) }
 
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -55,10 +54,12 @@ fun RegisterScreen(
             else -> null
         }
     }
-
+    val context = LocalContext.current
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
+
+
                 navController.navigate(HomePageRoutes.Home) {
                     popUpTo(AuthRoutes.Register) { inclusive = true }
                 }
@@ -86,12 +87,12 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         FitNestTextField(
-            value = username,
+            value = email,
             onValueChange = {
-                username = it
+                email = it
                 showError = null
             },
-            label = "Username",
+            label = "email",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -200,10 +201,10 @@ fun RegisterScreen(
 
         FitNestButton(
             onClick = {
-                viewModel.register(username, password, dateOfBirth)
+                viewModel.register(email, password, dateOfBirth)
             },
             text = if (authState is AuthState.Loading) "Registering..." else "Register",
-            enabled = username.isNotBlank() &&
+            enabled = email.isNotBlank() &&
                     password.isNotBlank() &&
                     confirmPassword.isNotBlank() &&
                     passwordError == null &&

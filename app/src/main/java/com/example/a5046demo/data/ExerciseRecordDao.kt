@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ExerciseRecordDao {
 
-    @Query("SELECT * FROM exercise_record ORDER BY date DESC")
-    fun getAllRecords(): Flow<List<ExerciseRecord>>
+    @Query("SELECT * FROM exercise_record WHERE userId = :userId ORDER BY date DESC")
+    fun getRecordsByUser(userId: String): Flow<List<ExerciseRecord>>
 
     @Insert
     suspend fun insertRecord(record: ExerciseRecord)

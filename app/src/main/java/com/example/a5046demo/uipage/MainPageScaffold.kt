@@ -1,6 +1,7 @@
 package com.example.a5046demo.uipage
 
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -13,13 +14,16 @@ import androidx.navigation.compose.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.uipage.navigation.MainNavHost
+import com.example.a5046demo.viewmodel.UserProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
-fun MainAppScaffold(navController: NavHostController, viewModel: ExerciseViewModel) {
+fun MainAppScaffold(navController: NavHostController, viewModel: ExerciseViewModel,  userProfileViewModel: UserProfileViewModel ) {
 
     data class NavRoute(val route: String, val icon: ImageVector, val label: String)
 
@@ -31,6 +35,11 @@ fun MainAppScaffold(navController: NavHostController, viewModel: ExerciseViewMod
     )
 
     val navController = rememberNavController()
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val context = LocalContext.current.applicationContext as Application
+    val userProfileViewModel = remember {
+        UserProfileViewModel(context, userId)
+    }
 
     Scaffold(
         bottomBar = {
@@ -68,6 +77,7 @@ fun MainAppScaffold(navController: NavHostController, viewModel: ExerciseViewMod
         MainNavHost(
             navController = navController,
             viewModel = viewModel,
+            userProfileViewModel = userProfileViewModel,
             modifier = Modifier.padding(innerPadding)
         )
     }
