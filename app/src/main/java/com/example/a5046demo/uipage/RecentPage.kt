@@ -36,12 +36,36 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.input.pointer.pointerInput
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.a5046demo.data.ExerciseRecord
+import com.example.a5046demo.viewmodel.ExerciseViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
+    val viewModel: ExerciseViewModel = viewModel()
+    val recordList by viewModel.allRecords.collectAsState(initial = emptyList())
+    val weekDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+// Convert to map: date -> record
+    val recordMap = recordList.associateBy { it.date }
+
+// Generate full week with fallbacks
+    val completeRecords = weekDays.map { day ->
+        recordMap[day] ?: ExerciseRecord(
+            id = 0, // won't be used
+            exerciseType = "",
+            date = day,
+            duration = 0,
+            intensity = ""
+        )
+    }
+
+    val labels = completeRecords.map { it.date }
+    val durations = completeRecords.map { it.duration.toFloat() }
+    val calories = completeRecords.map { it.duration * 50f }
+    val weights = List(7) { 68.0f + it * 0.1f }
+
     Scaffold(containerColor = Color.White) { padding ->
         Column(
             modifier = Modifier
@@ -91,33 +115,33 @@ fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
             OverviewStatCard(
                 icon = Icons.Default.MoreVert,
                 title = "Weight 🃏",
-                value = 68.5f,
-                barData = listOf(67.8f, 68.0f, 68.2f, 68.5f, 68.4f, 68.3f, 68.5f),
+                value = weights.lastOrNull() ?: 0f,
+                barData = weights,
                 unitA = "KG",
                 unitB = "LBS",
-                labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                labels = labels
             )
 
             // 卡片：Calories
             OverviewStatCard(
                 icon = Icons.Default.MoreVert,
                 title = "Calories 🔥",
-                value = 2000f,
-                barData = listOf(1200f, 1400f, 1300f, 1800f, 2200f, 1900f, 2000f),
+                value = calories.lastOrNull() ?: 0f,
+                barData = calories,
                 unitA = "Calories",
                 unitB = "KJ",
-                labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                labels = labels
             )
 
             // 卡片：Workout Time
             OverviewStatCard(
                 icon = Icons.Default.MoreVert,
                 title = "Workout Time ⏱️",
-                value = 45f,
-                barData = listOf(20f, 30f, 15f, 60f, 45f, 50f, 40f),
+                value = durations.lastOrNull() ?: 0f,
+                barData = durations,
                 unitA = "Mins",
                 unitB = "Hours",
-                labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                labels = labels
             )
         }
     }
