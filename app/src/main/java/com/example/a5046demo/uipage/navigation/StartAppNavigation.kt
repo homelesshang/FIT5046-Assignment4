@@ -58,8 +58,9 @@ fun StartAppNavigation() {
                             UserProfile(
                                 userId = userId,
                                 nickname = "New User",
-                                weight = 65f,
-                                height = 170f
+                                weight = null,
+                                height = null,
+                                birthday = null
                             )
                         )
                         Log.d("InitProfile", "Inserted default profile for $userId")

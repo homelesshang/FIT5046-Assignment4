@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class UserProfile(
     @PrimaryKey val userId: String,   // 使用 Firebase UID 作为主键，唯一标识用户
     val nickname: String,
-    val weight: Float,
-    val height: Float
+    val weight: Float?,
+    val height: Float?,
+    val birthday:String?
 )

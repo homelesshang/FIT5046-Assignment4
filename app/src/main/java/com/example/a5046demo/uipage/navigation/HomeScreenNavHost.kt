@@ -50,7 +50,7 @@ fun MainNavHost(
             ProfileScreen(navController = navController,userProfileViewModel = userProfileViewModel)
         }
         composable(HomePageRoutes.EditProfile) {
-            EditProfileScreen(onBackClick = { navController.popBackStack() })
+            EditProfileScreen(userProfileViewModel = userProfileViewModel,onBackClick = { navController.popBackStack() })
         }
     }
 }
