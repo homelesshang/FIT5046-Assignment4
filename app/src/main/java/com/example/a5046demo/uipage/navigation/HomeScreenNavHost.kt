@@ -50,7 +50,7 @@ fun MainNavHost(
             ExerciseHistoryScreen(viewModel = viewModel, navController = navController)
         }
         composable("progress") {
-            GreenStatsPageWithHeader(viewModel = viewModel) // 你自己写的图表页面
+            GreenStatsPageWithHeader(viewModel = viewModel, onClose = { navController.popBackStack() }) // workout weekly summary
         }
         composable(HomePageRoutes.Profile) {
             ProfileScreen(navController = navController, authViewModel = authViewModel, userProfileViewModel = userProfileViewModel)

@@ -40,7 +40,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a5046demo.data.ExerciseRecord
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.google.firebase.auth.FirebaseAuth
-
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,15 +71,10 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
     val calories = completeRecords.map { it.duration * 50f }
     val weights = List(7) { 68.0f + it * 0.1f }
 
-    Scaffold(containerColor = Color.White) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // 顶部标题栏 + 关闭按钮
+    Scaffold(
+        modifier = Modifier.systemBarsPadding(),
+        containerColor = Color.White,
+        topBar = {
             TopAppBar(
                 title = {
                     Text(
@@ -88,13 +85,13 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back */ }) {
+                    IconButton(onClick = onClose) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(onClick = {
-                        // TODO: Handle share action (e.g. open share sheet)
+                        // TODO: Handle share
                     }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")
                     }
@@ -104,7 +101,15 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
                     titleContentColor = Color(0xFF2E8B57)
                 )
             )
-
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it) //
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
 
             // 欢迎语 + 总结语
             Text(
@@ -358,6 +363,6 @@ fun OverviewStatCard(
 //@Preview(showBackground = true)
 //@Composable
 //fun PreviewGreenStatsPageWithHeader() {
-//    GreenStatsPageWithHeader()
+//    GreenStatsPageWithHeader(ExerciseViewModel)
 //}
 
