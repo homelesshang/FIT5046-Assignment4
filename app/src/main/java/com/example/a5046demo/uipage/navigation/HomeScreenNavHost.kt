@@ -47,7 +47,7 @@ fun MainNavHost(
             ExerciseHistoryScreen(viewModel = viewModel)
         }
         composable(HomePageRoutes.Profile) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController,userProfileViewModel = userProfileViewModel)
         }
         composable(HomePageRoutes.EditProfile) {
             EditProfileScreen(onBackClick = { navController.popBackStack() })
