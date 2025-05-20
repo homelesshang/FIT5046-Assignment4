@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -38,17 +39,12 @@ import com.example.a5046demo.viewmodel.UserProfileViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController,
-                  authViewModel: AuthViewModel = viewModel(),
+                  authViewModel :AuthViewModel,
                   userProfileViewModel: UserProfileViewModel,
                   location: String = "Melbourne, Australia",
-                  weight: String = "60kg",
-                  height: String = "175cm",
                   intake: String = "2168kcal",
-                  bmi: String = "19.6",
                   burned: String = "273 kcal"
 )
-
-
 
 
         {
@@ -59,9 +55,17 @@ fun ProfileScreen(navController: NavController,
                 }
                 return
             }
+            val p = profile ?: return
+            val nickname = p.nickname
+            val weight = p.weight?.let { "$it kg" } ?: "Unknown"
+            val height = p.height?.let { "$it cm" } ?: "Unknown"
 
-            val nickname = profile!!.nickname
-            val weight = "${profile!!.weight} kg"
+            val bmi = if (p.weight != null && p.height != null && p.height > 0f) {
+                val h = p.height / 100f
+                String.format("%.1f", p.weight / (h * h))
+            } else {
+                "Unknown"
+            }
 
             Scaffold(
                 topBar = {
@@ -117,10 +121,14 @@ fun ProfileScreen(navController: NavController,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Box(modifier = Modifier.weight(1f)) {
-                                InfoCardGreen("Weight", weight, "⚖️")
+                                InfoCardGreen("Weight", weight, "⚖️") {
+                                    navController.navigate("edit_profile")
+                                }
                             }
                             Box(modifier = Modifier.weight(1f)) {
-                                InfoCardGreen("Height", height, "📏")
+                                InfoCardGreen("Height", height, "📏") {
+                                    navController.navigate("edit_profile")
+                                }
                             }
                         }
                         Row(
@@ -128,7 +136,7 @@ fun ProfileScreen(navController: NavController,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Box(modifier = Modifier.weight(1f)) {
-                                InfoCardGreen("Daily Intake", intake, "🍽️")
+                                InfoCardGreen("Today Exercise time", intake, "⏱\uFE0F")
                             }
                             Box(modifier = Modifier.weight(1f)) {
                                 InfoCardGreen("BMI", bmi, "📊")
@@ -142,9 +150,6 @@ fun ProfileScreen(navController: NavController,
                         Button(
                             onClick = {
                                 authViewModel.signOut()
-                                navController.navigate("login") {
-                                    popUpTo(0) { inclusive = true }
-                                }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
                             modifier = Modifier
@@ -173,29 +178,51 @@ fun ProfileScreen(navController: NavController,
         }
 
 
-        @Composable
-        fun InfoCardGreen(title: String, value: String, icon: String) {
-            Card(
+@Composable
+fun InfoCardGreen(
+    title: String,
+    value: String,
+    icon: String,
+    onEditClick: (() -> Unit)? = null
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FFF0))
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FFF0))
+                    .padding(12.dp)
+                    .align(Alignment.BottomStart),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
+                Text(icon, fontSize = 20.sp)
+                Text(title, fontSize = 14.sp, color = Color.Gray)
+                Text(
+                    value,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF2E8B57)
+                )
+            }
+
+            if (onEditClick != null) {
+                IconButton(
+                    onClick = onEditClick,
+                    modifier = Modifier.align(Alignment.TopEnd)
                 ) {
-                    Text(icon, fontSize = 20.sp)
-                    Text(title, fontSize = 14.sp, color = Color.Gray)
-                    Text(
-                        value,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = Color(0xFF2E8B57)
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit $title",
+                        tint = Color(0xFF2E8B57)
                     )
                 }
             }
         }
+    }
+}

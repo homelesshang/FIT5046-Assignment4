@@ -2,10 +2,6 @@ package com.example.a5046demo.uipage
 
 import android.app.Application
 import android.util.Log
-import androidx.compose.foundation.layout.*
-
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 
 import androidx.navigation.compose.*
@@ -19,7 +15,6 @@ import com.example.a5046demo.uipage.navigation.AuthNavHost
 import com.example.a5046demo.viewmodel.AuthState
 import com.example.a5046demo.viewmodel.AuthViewModel
 import com.example.a5046demo.viewmodel.ExerciseViewModel
-import com.example.a5046demo.uipage.Splash.SplashScreen
 import com.example.a5046demo.viewmodel.ExerciseViewModelFactory
 import com.example.a5046demo.viewmodel.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -58,8 +53,9 @@ fun StartAppNavigation() {
                             UserProfile(
                                 userId = userId,
                                 nickname = "New User",
-                                weight = 65f,
-                                height = 170f
+                                weight = null,
+                                height = null,
+                                birthday = null
                             )
                         )
                         Log.d("InitProfile", "Inserted default profile for $userId")
@@ -69,6 +65,7 @@ fun StartAppNavigation() {
                 // ✅ 进入主界面（带底部导航栏）
                 MainAppScaffold(
                     navController = navController,
+                    authViewModel = authViewModel,
                     viewModel = exerciseViewModel,
                     userProfileViewModel = userProfileViewModel
                 )
@@ -78,9 +75,9 @@ fun StartAppNavigation() {
             }
         }
 
-        is AuthState.Loading -> {
-            SplashScreen(navController = navController)
-        }
+//        is AuthState.Loading -> {
+//            AuthNavHost(navController = navController, viewModel = authViewModel)
+//        }
 
         else -> {
             AuthNavHost(navController = navController, viewModel = authViewModel)

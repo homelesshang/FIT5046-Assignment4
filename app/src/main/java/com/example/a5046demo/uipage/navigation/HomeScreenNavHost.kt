@@ -13,6 +13,7 @@ import com.example.a5046demo.uipage.ExerciseHistoryScreen
 import com.example.a5046demo.uipage.HomeScreen
 import com.example.a5046demo.uipage.ProfileScreen
 import com.example.a5046demo.uipage.RecordScreen
+import com.example.a5046demo.viewmodel.AuthViewModel
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.viewmodel.UserProfileViewModel
 
@@ -28,6 +29,7 @@ object HomePageRoutes {
 @Composable
 fun MainNavHost(
     navController: NavHostController,
+    authViewModel:AuthViewModel,
     viewModel: ExerciseViewModel,
     userProfileViewModel: UserProfileViewModel,
     modifier: Modifier = Modifier
@@ -47,10 +49,10 @@ fun MainNavHost(
             ExerciseHistoryScreen(viewModel = viewModel)
         }
         composable(HomePageRoutes.Profile) {
-            ProfileScreen(navController = navController,userProfileViewModel = userProfileViewModel)
+            ProfileScreen(navController = navController, authViewModel = authViewModel, userProfileViewModel = userProfileViewModel)
         }
         composable(HomePageRoutes.EditProfile) {
-            EditProfileScreen(onBackClick = { navController.popBackStack() })
+            EditProfileScreen(userProfileViewModel = userProfileViewModel,onBackClick = { navController.popBackStack() })
         }
     }
 }

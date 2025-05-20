@@ -18,12 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.uipage.navigation.MainNavHost
+import com.example.a5046demo.viewmodel.AuthViewModel
 import com.example.a5046demo.viewmodel.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
-fun MainAppScaffold(navController: NavHostController, viewModel: ExerciseViewModel,  userProfileViewModel: UserProfileViewModel ) {
+fun MainAppScaffold(navController: NavHostController, authViewModel: AuthViewModel, viewModel: ExerciseViewModel, userProfileViewModel: UserProfileViewModel ) {
 
     data class NavRoute(val route: String, val icon: ImageVector, val label: String)
 
@@ -76,6 +77,7 @@ fun MainAppScaffold(navController: NavHostController, viewModel: ExerciseViewMod
     ) { innerPadding ->
         MainNavHost(
             navController = navController,
+            authViewModel = authViewModel,
             viewModel = viewModel,
             userProfileViewModel = userProfileViewModel,
             modifier = Modifier.padding(innerPadding)

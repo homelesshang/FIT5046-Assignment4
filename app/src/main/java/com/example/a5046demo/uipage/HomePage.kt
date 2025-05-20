@@ -25,6 +25,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a5046demo.viewmodel.WeatherViewModel
 import androidx.compose.runtime.*
 import com.example.a5046demo.viewmodel.UserProfileViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun HomeScreen(viewModel: UserProfileViewModel) {
@@ -38,6 +42,9 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
 
     val nickname = profile!!.nickname
     val weight = "${profile!!.weight} kg"
+    val todayText = remember {
+        "Today, " + SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date())
+    }
 
     Column(
         modifier = Modifier
@@ -80,8 +87,14 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Today, 14 Apr", fontSize = 16.sp, color = Color.White)
-                Text("1883 Kcal", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(
+                    text = todayText,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 1.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
                     Text("Track your activity", color = Color(0xFF2E8B57))

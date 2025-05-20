@@ -23,19 +23,32 @@ import com.example.a5046demo.R
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
+import com.example.a5046demo.viewmodel.UserProfileViewModel
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Locale
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
+    userProfileViewModel: UserProfileViewModel,
     onBackClick: () -> Unit = {}
 ) {
-    var name by remember { mutableStateOf("John Doe") }
-    var birthday by remember { mutableStateOf("1990-01-01") }
+    val profile by userProfileViewModel.userProfile.collectAsState(initial = null)
+    if (profile == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    var name by remember { mutableStateOf(profile!!.nickname) }
+    var birthday by remember { mutableStateOf(profile!!.birthday ?: "2000-01-01") }
     var region by remember { mutableStateOf("Melbourne, Australia") }
+    var weight by remember { mutableStateOf(profile!!.weight?.toString() ?: "") }
+    var height by remember { mutableStateOf(profile!!.height?.toString() ?: "") }
     val green = Color(0xFF2E8B57)
 
     Scaffold(
@@ -61,171 +74,203 @@ fun EditProfileScreen(
             }
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            // Avatar Section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    contentAlignment = Alignment.BottomEnd,
-                    modifier = Modifier.size(120.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.asd),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                    )
-
-                    IconButton(
-                        onClick = { /* TODO: handle profile picture edit */ },
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(Color.White, CircleShape)
-                            .padding(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile Picture",
-                            tint = green
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = green,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
             // Form Section
-            Column(
+            var showDatePicker by remember { mutableStateOf(false) }
+            val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = Instant.now().toEpochMilli()
+            )
+
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+                    .padding(innerPadding)
+                    .fillMaxSize()
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = green,
-                        unfocusedBorderColor = green,
-                        focusedLabelColor = green,
-                        cursorColor = green
-                    )
-                )
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),  // 给点顶部间距
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.BottomEnd,
+                            modifier = Modifier.size(120.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.asd),
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .clip(CircleShape)
+                            )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-
-                var birthday by remember { mutableStateOf("2000-01-01") }
-                var showDatePicker by remember { mutableStateOf(false) }
-
-
-                val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
-                val datePickerState = rememberDatePickerState(
-                    initialSelectedDateMillis = Instant.now().toEpochMilli()
-                )
-
-                OutlinedTextField(
-                    value = birthday,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Birthday") },
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.calendar_icon),
-                            contentDescription = "Pick Date",
-                            modifier = Modifier
-                                .clickable { showDatePicker = true }
-                                .size(24.dp),
-                            tint = green
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = green,
-                        unfocusedBorderColor = green,
-                        focusedLabelColor = green,
-                        cursorColor = green
-                    )
-                )
-
-                if (showDatePicker) {
-                    DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                val millis = datePickerState.selectedDateMillis
-                                if (millis != null) {
-                                    birthday = formatter.format(Date(millis)) // set birthday
-                                }
-                                showDatePicker = false
-                            }) {
-                                Text("OK")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showDatePicker = false }) {
-                                Text("Cancel")
+                            IconButton(
+                                onClick = { /* TODO: handle profile picture edit */ },
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .background(Color.White, CircleShape)
+                                    .padding(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Edit Profile Picture",
+                                    tint = green
+                                )
                             }
                         }
-                    ) {
-                        DatePicker(state = datePickerState)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = green,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = region,
-                    onValueChange = { region = it },
-                    label = { Text("Region") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = green,
-                        unfocusedBorderColor = green,
-                        focusedLabelColor = green,
-                        cursorColor = green
+                item {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = green,
+                            unfocusedBorderColor = green,
+                            focusedLabelColor = green,
+                            cursorColor = green
+                        )
                     )
-                )
+                }
 
-                Button(
-                    onClick = { /* TODO: implement save logic */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = green),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 32.dp)
-                        .height(50.dp)
-                ) {
-                    Text("Save Changes", color = Color.White)
+                item {
+                    OutlinedTextField(
+                        value = birthday,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Birthday") },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.calendar_icon),
+                                contentDescription = "Pick Date",
+                                modifier = Modifier
+                                    .clickable { showDatePicker = true }
+                                    .size(24.dp),
+                                tint = green
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDatePicker = true },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = green,
+                            unfocusedBorderColor = green,
+                            focusedLabelColor = green,
+                            cursorColor = green
+                        )
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = region,
+                        onValueChange = { region = it },
+                        label = { Text("Region") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = green,
+                            unfocusedBorderColor = green,
+                            focusedLabelColor = green,
+                            cursorColor = green
+                        )
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = weight,
+                        onValueChange = { weight = it },
+                        label = { Text("Weight") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = green,
+                            unfocusedBorderColor = green,
+                            focusedLabelColor = green,
+                            cursorColor = green
+                        )
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = height,
+                        onValueChange = { height = it },
+                        label = { Text("Height") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = green,
+                            unfocusedBorderColor = green,
+                            focusedLabelColor = green,
+                            cursorColor = green
+                        )
+                    )
+                }
+
+                item {
+                    Button(
+                        onClick = {
+                            val updatedProfile = profile!!.copy(
+                                nickname = name,
+                                birthday = birthday,
+                                weight = weight.toFloatOrNull(),
+                                height = height.toFloatOrNull()
+                            )
+                            userProfileViewModel.updateProfile(updatedProfile)
+                            onBackClick()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = green),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp)
+                            .height(50.dp)
+                    ) {
+                        Text("Save Changes", color = Color.White)
+                    }
                 }
             }
-        }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewEditProfileScreen() {
-    EditProfileScreen()
-}
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val millis = datePickerState.selectedDateMillis
+                            if (millis != null) {
+                                birthday = formatter.format(Date(millis)) // set birthday
+                            }
+                            showDatePicker = false
+                        }) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
+
+
+            }
+        }
+
+
+
