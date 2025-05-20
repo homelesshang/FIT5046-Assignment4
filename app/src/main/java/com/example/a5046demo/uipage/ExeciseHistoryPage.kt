@@ -14,13 +14,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.data.ExerciseRecord
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseHistoryScreen(viewModel: ExerciseViewModel) {
+fun ExerciseHistoryScreen(viewModel: ExerciseViewModel,navController: NavHostController) {
+
     val records by viewModel.allRecords.collectAsState(initial = emptyList())
     var editingRecord by remember { mutableStateOf<ExerciseRecord?>(null) }
 
@@ -37,7 +39,7 @@ fun ExerciseHistoryScreen(viewModel: ExerciseViewModel) {
             ExtendedFloatingActionButton(
                 text = { Text("📊 View Recent Progress") },
                 onClick = {
-                    // 👉 Add your navigation or logic here
+                    navController.navigate("progress")
                 },
                 icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
                 containerColor = Color(0xFF2E8B57),

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.a5046demo.uipage.EditProfileScreen
 import com.example.a5046demo.uipage.ExerciseHistoryScreen
+import com.example.a5046demo.uipage.GreenStatsPageWithHeader
 import com.example.a5046demo.uipage.HomeScreen
 import com.example.a5046demo.uipage.ProfileScreen
 import com.example.a5046demo.uipage.RecordScreen
@@ -46,7 +47,10 @@ fun MainNavHost(
             RecordScreen(viewModel = viewModel)
         }
         composable(HomePageRoutes.History) {
-            ExerciseHistoryScreen(viewModel = viewModel)
+            ExerciseHistoryScreen(viewModel = viewModel, navController = navController)
+        }
+        composable("progress") {
+            GreenStatsPageWithHeader(viewModel = viewModel) // 你自己写的图表页面
         }
         composable(HomePageRoutes.Profile) {
             ProfileScreen(navController = navController, authViewModel = authViewModel, userProfileViewModel = userProfileViewModel)

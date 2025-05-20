@@ -44,8 +44,8 @@ import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GreenStatsPageWithHeader(onClose: () -> Unit = {}) {
-    val viewModel: ExerciseViewModel = viewModel()
+fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = {}) {
+
     val recordList by viewModel.allRecords.collectAsState(initial = emptyList())
     val weekDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 // Convert to map: date -> record
@@ -355,9 +355,9 @@ fun OverviewStatCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewGreenStatsPageWithHeader() {
-    GreenStatsPageWithHeader()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewGreenStatsPageWithHeader() {
+//    GreenStatsPageWithHeader()
+//}
 
