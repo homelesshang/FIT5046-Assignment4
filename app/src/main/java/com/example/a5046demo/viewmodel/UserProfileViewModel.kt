@@ -29,12 +29,13 @@ class UserProfileViewModel(application: Application, private val userId: String)
 
     }
 
-    fun syncUserProfileFromFirebase() { viewModelScope.launch(Dispatchers.IO)
-    {
-            val firebaseUserProfile = firebaseRepository.getUserProfile(userId)
-            if (firebaseUserProfile != null) {
-                userProfileDao.insertOrUpdate(firebaseUserProfile)
-            }
+    suspend fun syncUserProfileFromFirebase(): Boolean {
+        val firebaseProfile = firebaseRepository.getUserProfile(userId)
+        return if (firebaseProfile != null) {
+            userProfileDao.insertOrUpdate(firebaseProfile)
+            true
+        } else {
+            false
         }
     }
 }
