@@ -55,7 +55,7 @@ fun MainNavHost(
             GreenStatsPageWithHeader(viewModel = viewModel, userViewModel = userProfileViewModel, onClose = { navController.popBackStack() }) // workout weekly summary
         }
         composable(HomePageRoutes.Profile) {
-            ProfileScreen(navController = navController, authViewModel = authViewModel, userProfileViewModel = userProfileViewModel)
+            ProfileScreen(navController = navController, authViewModel = authViewModel, userProfileViewModel = userProfileViewModel,exerciseViewModel=viewModel)
         }
         composable(HomePageRoutes.EditProfile) {
             EditProfileScreen(userProfileViewModel = userProfileViewModel,onBackClick = { navController.popBackStack() })

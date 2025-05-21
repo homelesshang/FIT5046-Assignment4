@@ -29,8 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.a5046demo.R
 import com.example.a5046demo.viewmodel.AuthViewModel
+import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.viewmodel.UserProfileViewModel
-
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +41,7 @@ import com.example.a5046demo.viewmodel.UserProfileViewModel
 fun ProfileScreen(navController: NavController,
                   authViewModel :AuthViewModel,
                   userProfileViewModel: UserProfileViewModel,
-                  intake: String = "2168kcal",
+                  exerciseViewModel: ExerciseViewModel,
                   burned: String = "273 kcal"
 )
 
@@ -68,6 +71,16 @@ fun ProfileScreen(navController: NavController,
             }
 
             var region by remember { mutableStateOf(profile!!.region) }
+
+            val allRecords by exerciseViewModel.allRecords.collectAsState(initial = emptyList())
+
+            val today = remember {
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            }
+            val todayTotalDuration = allRecords
+                .filter { it.date == today }
+                .sumOf { it.duration }
+
 
             Scaffold(
                 topBar = {
@@ -138,16 +151,15 @@ fun ProfileScreen(navController: NavController,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Box(modifier = Modifier.weight(1f)) {
-                                InfoCardGreen("Today Exercise time", intake, "⏱\uFE0F")
+                                InfoCardGreen("Today Exercise time", "${todayTotalDuration} min", "⏱\uFE0F")
                             }
                             Box(modifier = Modifier.weight(1f)) {
                                 InfoCardGreen("BMI", bmi, "📊")
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(128.dp))
 
-                        val context = LocalContext.current
 
                         Button(
                             onClick = {
@@ -167,14 +179,6 @@ fun ProfileScreen(navController: NavController,
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Calories Burned Today", fontSize = 14.sp, color = Color.Gray)
-                    Text(
-                        burned,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2E8B57)
-                    )
                 }
             }
         }
