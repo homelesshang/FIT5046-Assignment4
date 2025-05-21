@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.clip
 import com.example.a5046demo.R
@@ -29,10 +30,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.text.style.TextAlign
+import com.example.a5046demo.viewmodel.ExerciseViewModel
+import androidx.compose.foundation.lazy.items
 
 @Composable
-fun HomeScreen(viewModel: UserProfileViewModel) {
+fun HomeScreen(
+    viewModel: UserProfileViewModel,
+    exerciseViewModel: ExerciseViewModel
+) {
     val profile by viewModel.userProfile.collectAsState(initial = null)
+    val todayStats by exerciseViewModel.todayStats.collectAsState()
+
+    LaunchedEffect(Unit) {
+        exerciseViewModel.loadTodayStats()
+    }
+
     if (profile == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -41,7 +53,7 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
     }
 
     val nickname = profile!!.nickname
-    val weight = "${profile!!.weight} kg"
+    val weight = profile!!.weight?.let { "$it kg" } ?: "Unknown"
     val todayText = remember {
         "Today, " + SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date())
     }
@@ -56,7 +68,7 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        // Top Profile Avatar + Welcome
+        // 🔹 Profile Info
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,7 +89,7 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
             }
         }
 
-        // Highlighted Kcal Card
+        // 🔹 Highlighted Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
@@ -96,27 +108,36 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.White)) {
+                Button(
+                    onClick = { /* Navigate to Record Screen */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                ) {
                     Text("Track your activity", color = Color(0xFF2E8B57))
                 }
             }
         }
 
-        // Top Exercises
+        // 🔹 Daily Exercise Summary
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Today's Breakdown", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ExerciseCard(title = "Dumbbell", kcal = 628, color = Color(0xFF2E8B57))
-                ExerciseCard(title = "Treadmill", kcal = 235, color = Color(0xFF000000))
-                ExerciseCard(title = "Rope", kcal = 432, color = Color(0xFF888888))
+
+            if (todayStats.isEmpty()) {
+                Text("No activity logged today.", color = Color.Gray)
+            } else {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(todayStats) { stat ->
+                        ExerciseCard(
+                            title = stat.name,
+                            kcal = stat.calories,
+                            color = stat.color
+                        )
+                    }
+                }
             }
         }
 
-        // Weekly Workout Card with Weight
+        // 🔹 Weight Info Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
@@ -158,11 +179,13 @@ fun HomeScreen(viewModel: UserProfileViewModel) {
             }
         }
 
+        // 🔹 Weather Info (Always Shown)
         WeatherCard()
 
         Spacer(modifier = Modifier.height(100.dp))
     }
 }
+
 
 
 
@@ -173,7 +196,10 @@ fun ExerciseCard(title: String, kcal: Int, color: Color) {
         colors = CardDefaults.cardColors(containerColor = color),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text("$kcal Kcal", color = Color.White, fontWeight = FontWeight.Bold)
             Text(title, color = Color.White)
         }
@@ -217,6 +243,11 @@ fun WeatherCard(viewModel: WeatherViewModel = viewModel()) {
         }
     }
 }
+
+
+
+
+
 
 //@Preview(showBackground = true)
 //@Composable
