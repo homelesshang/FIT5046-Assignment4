@@ -12,10 +12,16 @@ import com.example.a5046demo.repository.FirebaseRepository
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.example.a5046demo.data.ExerciseStat
+import com.example.a5046demo.model.DailyStat
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -31,6 +37,9 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
 
     private val _todayStats = MutableStateFlow<List<ExerciseStat>>(emptyList())
     val todayStats: StateFlow<List<ExerciseStat>> = _todayStats
+    private val _weeklyStats = MutableStateFlow<List<LabeledStat>>(emptyList())
+    val weeklyStats: StateFlow<List<LabeledStat>> = _weeklyStats
+
 
 
     private val repository = ExerciseRepository(application)
@@ -95,5 +104,44 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
 
         else -> {Color.Transparent}
     }
+
+    val dailyStats = MutableStateFlow<List<DailyStat>>(emptyList())
+
+    data class LabeledStat(
+        val label: String, // "Mon", "Tue", etc.
+        val stat: DailyStat
+    )
+    fun loadWeeklyStats(uid: String) {
+        viewModelScope.launch {
+
+
+            val labeledStats = mutableListOf<LabeledStat>()
+            val db = Firebase.firestore
+            val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+            val dayLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+            val today = LocalDate.now()
+            val monday = today.minusDays((today.dayOfWeek.value % 7).toLong())
+
+            for (i in 0..6) {
+                val date = monday.plusDays(i.toLong())
+                val docId = date.format(formatter)
+                val snapshot = db.collection("users")
+                    .document(uid)
+                    .collection("dailyStats")
+                    .document(docId)
+                    .get()
+                    .await()
+
+                val stat = snapshot.toObject(DailyStat::class.java) ?: DailyStat(date = docId)
+                labeledStats.add(LabeledStat(label = dayLabels[i], stat = stat))
+            }
+
+            _weeklyStats.value = labeledStats
+
+        }
+    }
+
+
 
 }

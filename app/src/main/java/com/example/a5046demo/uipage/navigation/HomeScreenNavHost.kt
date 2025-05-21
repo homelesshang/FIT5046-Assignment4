@@ -17,6 +17,8 @@ import com.example.a5046demo.uipage.RecordScreen
 import com.example.a5046demo.viewmodel.AuthViewModel
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.viewmodel.UserProfileViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 
 object HomePageRoutes {
@@ -50,7 +52,7 @@ fun MainNavHost(
             ExerciseHistoryScreen(viewModel = viewModel, navController = navController)
         }
         composable("progress") {
-            GreenStatsPageWithHeader(viewModel = viewModel, onClose = { navController.popBackStack() }) // workout weekly summary
+            GreenStatsPageWithHeader(viewModel = viewModel, userViewModel = userProfileViewModel, onClose = { navController.popBackStack() }) // workout weekly summary
         }
         composable(HomePageRoutes.Profile) {
             ProfileScreen(navController = navController, authViewModel = authViewModel, userProfileViewModel = userProfileViewModel)

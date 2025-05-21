@@ -47,21 +47,43 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed // only if you use them
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.example.a5046demo.viewmodel.UserProfileViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = {}) {
+fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,
+                             userViewModel: UserProfileViewModel,
+                             onClose: () -> Unit = {}) {
 
-    val recordList by viewModel.allRecords.collectAsState(initial = emptyList())
-    val weekDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-// Convert to map: date -> record
-    val recordMap = recordList.associateBy { it.date }
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    LaunchedEffect(userId) {
+        viewModel.loadWeeklyStats(userId)
+    }
+    val recordList by viewModel.allRecords.collectAsState(initial = emptyList())
+    val recordMap = recordList.associateBy { it.date }
+    val weeklyStats = viewModel.weeklyStats.collectAsState().value
+
+    val fullWeekDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+    val todayIndex = java.time.LocalDate.now().dayOfWeek.value % 7
+    val todayIndexAdjusted = if (todayIndex == 0) 6 else todayIndex - 1
+    val recentStats = weeklyStats
+
+    val weights = recentStats.map { it.stat.weight }
+    val weightLabels = recentStats.map { it.label }
+
+    val calories = weeklyStats.map { it.stat.totalCaloriesBurned.toFloat() }
+    val durations = weeklyStats.map { it.stat.totalExerciseTime.toFloat() }
+    val labels = weeklyStats.map { it.label }
+
+
+
+
 
 // Generate full week with fallbacks
-    val completeRecords = weekDays.map { day ->
-        recordMap[day] ?: ExerciseRecord(
+    val completeRecords = fullWeekDays.map { day ->
+    recordMap[day] ?: ExerciseRecord(
             id = 0, // won't be used
             exerciseType = "",
             date = day,
@@ -71,10 +93,9 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
         )
     }
 
-    val labels = completeRecords.map { it.date }
-    val durations = completeRecords.map { it.duration.toFloat() }
-    val calories = completeRecords.map { it.duration * 50f }
-    val weights = List(7) { 68.0f + it * 0.1f }
+    val userProfile by userViewModel.userProfile.collectAsState(initial = null)
+    val baseWeight = userProfile?.weight ?: 0f
+
 
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
@@ -130,11 +151,11 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
                 OverviewStatCard(
                     icon = Icons.Default.MoreVert,
                     title = "Weight 🃏",
-                    value = weights.lastOrNull() ?: 0f,
+                    value = weights.lastOrNull({ it != 0f }) ?: 0f,
                     barData = weights,
                     unitA = "KG",
                     unitB = "LBS",
-                    labels = labels
+                    labels = weightLabels
                 )
             }
             // 卡片：Calories
@@ -142,7 +163,7 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
                 OverviewStatCard(
                     icon = Icons.Default.MoreVert,
                     title = "Calories 🔥",
-                    value = calories.lastOrNull() ?: 0f,
+                    value = calories.lastOrNull({ it != 0f }) ?: 0f,
                     barData = calories,
                     unitA = "Calories",
                     unitB = "KJ",
@@ -155,7 +176,7 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
                 OverviewStatCard(
                     icon = Icons.Default.MoreVert,
                     title = "Workout Time ⏱️",
-                    value = durations.lastOrNull() ?: 0f,
+                    value = durations.lastOrNull({ it != 0f }) ?: 0f,
                     barData = durations,
                     unitA = "Mins",
                     unitB = "Hours",
