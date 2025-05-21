@@ -26,6 +26,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
@@ -40,6 +41,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     Log.d("RecordScreen", "Inserting record with userId = $userId")
     val records by viewModel.allRecords.collectAsState(initial = emptyList())
+
 
     Scaffold(
         topBar = {
@@ -217,6 +219,24 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                 )
                                 viewModel.insertRecord(record)
 
+                                //firebase upload
+                                val duration = record.duration
+                                val calories = duration * 3
+                                val intensityIndex = when (selectedIntensity.lowercase()) {
+                                    "low" -> 0
+                                    "medium" -> 1
+                                    "high" -> 2
+                                    else -> 1
+                                }
+
+                                viewModel.logExerciseToFirebase(
+                                    uid = userId,
+                                    date = dateInput.replace("-", ""), // "yyyy-MM-dd" -> "yyyyMMdd"
+                                    duration = duration,
+                                    calories = calories,
+                                    intensityIndex = intensityIndex
+                                )
+                                //new added end
 
                                 dateInput = ""
                                 durationInput = ""
