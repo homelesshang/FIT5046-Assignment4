@@ -6,9 +6,14 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_profile")
 data class UserProfile(
-    @PrimaryKey val userId: String,   // 使用 Firebase UID 作为主键，唯一标识用户
-    val nickname: String,
-    val weight: Float?,
-    val height: Float?,
-    val birthday:String?
+    @PrimaryKey
+    var userId: String = "",
+
+    var nickname: String = "",
+
+    var weight: Float? = null,
+
+    var height: Float? = null,
+
+    var birthday: String? = null
 )

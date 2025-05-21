@@ -1,6 +1,7 @@
 package com.example.a5046demo.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a5046demo.data.AppDatabase
@@ -19,6 +20,9 @@ class UserProfileViewModel(application: Application, private val userId: String)
 
     val userProfile: Flow<UserProfile?> = userProfileDao.getUserProfile(userId)
 
+    fun insertLocalProfile(profile: UserProfile) = viewModelScope.launch(Dispatchers.IO) {
+        userProfileDao.insertOrUpdate(profile)
+    }
 
     fun updateProfile(profile: UserProfile) = viewModelScope.launch(Dispatchers.IO) {
         userProfileDao.insertOrUpdate(profile)
@@ -31,10 +35,13 @@ class UserProfileViewModel(application: Application, private val userId: String)
 
     suspend fun syncUserProfileFromFirebase(): Boolean {
         val firebaseProfile = firebaseRepository.getUserProfile(userId)
+
         return if (firebaseProfile != null) {
             userProfileDao.insertOrUpdate(firebaseProfile)
+            Log.d("SyncProfile", "Synced user profile from Firebase for userId: $userId")
             true
         } else {
+            Log.w("SyncProfile", "No profile found in Firebase for userId: $userId")
             false
         }
     }

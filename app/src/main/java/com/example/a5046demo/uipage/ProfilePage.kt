@@ -57,14 +57,18 @@ fun ProfileScreen(navController: NavController,
             }
             val p = profile ?: return
             val nickname = p.nickname
-            val weight = p.weight?.let { "$it kg" } ?: "Unknown"
-            val height = p.height?.let { "$it cm" } ?: "Unknown"
 
-            val bmi = if (p.weight != null && p.height != null && p.height > 0f) {
-                val h = p.height / 100f
-                String.format("%.1f", p.weight / (h * h))
+            val weightValue = p.weight ?: 0f
+            val heightValue = p.height ?: 0f
+
+            val weightDisplay = "$weightValue kg"
+            val heightDisplay = "$heightValue cm"
+
+            val bmi = if (heightValue > 0f) {
+                val h = heightValue / 100f
+                String.format("%.1f", weightValue / (h * h))
             } else {
-                "Unknown"
+                "0.0"
             }
 
             Scaffold(
@@ -121,12 +125,12 @@ fun ProfileScreen(navController: NavController,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Box(modifier = Modifier.weight(1f)) {
-                                InfoCardGreen("Weight", weight, "⚖️") {
+                                InfoCardGreen("Weight", weightDisplay, "⚖️") {
                                     navController.navigate("edit_profile")
                                 }
                             }
                             Box(modifier = Modifier.weight(1f)) {
-                                InfoCardGreen("Height", height, "📏") {
+                                InfoCardGreen("Height", heightDisplay, "📏") {
                                     navController.navigate("edit_profile")
                                 }
                             }

@@ -47,15 +47,10 @@ fun StartAppNavigation() {
 
 
 
-                // ✅ 如果第一次登录该用户，插入默认 Profile 数据
                 LaunchedEffect(userId) {
-                    val dao = AppDatabase.getDatabase(application).userProfileDao()
-                    val existing = dao.getUserProfileOnce(userId)
-
-                    if (existing == null) {
                         val synced = userProfileViewModel.syncUserProfileFromFirebase()
                         if (!synced) {
-                            userProfileViewModel.updateProfile(
+                            userProfileViewModel.insertLocalProfile(
                                 UserProfile(
                                     userId = userId,
                                     nickname = "New User",
@@ -68,10 +63,8 @@ fun StartAppNavigation() {
                         } else {
                             Log.d("InitProfile", "Fetched and saved profile from Firebase")
                         }
-                    } else {
-                        Log.d("InitProfile", "Room already has profile for $userId — no action")
                     }
-                }
+
 
                 // ✅ 进入主界面（带底部导航栏）
                 MainAppScaffold(
