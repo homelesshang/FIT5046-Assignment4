@@ -32,11 +32,14 @@ import java.util.Locale
 import androidx.compose.ui.text.style.TextAlign
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import androidx.compose.foundation.lazy.items
+import androidx.navigation.NavHostController
+import com.example.a5046demo.uipage.navigation.HomePageRoutes
 
 @Composable
 fun HomeScreen(
     viewModel: UserProfileViewModel,
-    exerciseViewModel: ExerciseViewModel
+    exerciseViewModel: ExerciseViewModel,
+    navController: NavHostController
 ) {
     val profile by viewModel.userProfile.collectAsState(initial = null)
     val todayStats by exerciseViewModel.todayStats.collectAsState()
@@ -109,7 +112,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
-                    onClick = { /* Navigate to Record Screen */ },
+                    onClick = { navController.navigate(HomePageRoutes.Record) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                 ) {
                     Text("Track your activity", color = Color(0xFF2E8B57))

@@ -41,7 +41,7 @@ fun MainNavHost(
         modifier = modifier
     ) {
         composable(HomePageRoutes.Home) {
-            HomeScreen(viewModel = userProfileViewModel,exerciseViewModel = viewModel)
+            HomeScreen(viewModel = userProfileViewModel,exerciseViewModel = viewModel,navController = navController)
         }
         composable(HomePageRoutes.Record) {
             RecordScreen(viewModel = viewModel)
