@@ -1,5 +1,6 @@
 package com.example.a5046demo.repository
 
+import android.util.Log
 import com.example.a5046demo.data.UserProfile
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -39,15 +40,17 @@ class FirebaseRepository {
 
     suspend fun getUserProfile(uid: String): UserProfile? {
         return try {
-            val userProfileSnapshot = db.collection("users").document(uid).get().await()
-            if (userProfileSnapshot.exists()) {
-                userProfileSnapshot.toObject(UserProfile::class.java)
+            val snapshot = db.collection("users").document(uid).get().await()
+            if (snapshot.exists()) {
+                Log.d("FirebaseRepo", "Fetched user profile from Firebase for $uid")
+                snapshot.toObject(UserProfile::class.java)
             } else {
+                Log.w("FirebaseRepo", "No profile exists in Firebase for $uid")
                 null
             }
         } catch (e: Exception) {
+            Log.e("FirebaseRepo", "Failed to fetch user profile: ${e.message}")
             null
         }
-
     }
 }
