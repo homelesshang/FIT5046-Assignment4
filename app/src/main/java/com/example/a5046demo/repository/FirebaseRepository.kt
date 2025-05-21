@@ -1,5 +1,6 @@
 package com.example.a5046demo.repository
 
+import com.example.a5046demo.data.UserProfile
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.example.a5046demo.model.DailyStat
@@ -34,5 +35,19 @@ class FirebaseRepository {
         )
 
         docRef.set(updated).await()
+    }
+
+    suspend fun getUserProfile(uid: String): UserProfile? {
+        return try {
+            val userProfileSnapshot = db.collection("users").document(uid).get().await()
+            if (userProfileSnapshot.exists()) {
+                userProfileSnapshot.toObject(UserProfile::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+
     }
 }

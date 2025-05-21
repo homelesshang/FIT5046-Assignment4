@@ -47,6 +47,7 @@ fun StartAppNavigation() {
 
                 // ✅ 如果第一次登录该用户，插入默认 Profile 数据
                 LaunchedEffect(userId) {
+                    userProfileViewModel.syncUserProfileFromFirebase()
                     val dao = AppDatabase.getDatabase(application).userProfileDao()
                     val existing = dao.getUserProfileOnce(userId)
                     if (existing == null) {

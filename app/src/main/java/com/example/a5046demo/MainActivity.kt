@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             _5046demoTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    StartAppNavigation() // ✅ 显示完整首页
+                    StartAppNavigation()
                 }
             }
         }
