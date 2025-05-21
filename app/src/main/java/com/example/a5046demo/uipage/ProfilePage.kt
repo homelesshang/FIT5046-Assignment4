@@ -1,8 +1,6 @@
 package com.example.a5046demo.uipage
 
 
-import android.app.Activity
-import android.provider.ContactsContract.CommonDataKinds.Nickname
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,12 +10,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,10 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.a5046demo.R
 import com.example.a5046demo.viewmodel.AuthViewModel
@@ -41,7 +38,6 @@ import com.example.a5046demo.viewmodel.UserProfileViewModel
 fun ProfileScreen(navController: NavController,
                   authViewModel :AuthViewModel,
                   userProfileViewModel: UserProfileViewModel,
-                  location: String = "Melbourne, Australia",
                   intake: String = "2168kcal",
                   burned: String = "273 kcal"
 )
@@ -70,6 +66,8 @@ fun ProfileScreen(navController: NavController,
             } else {
                 "0.0"
             }
+
+            var region by remember { mutableStateOf(profile!!.region) }
 
             Scaffold(
                 topBar = {
@@ -116,7 +114,7 @@ fun ProfileScreen(navController: NavController,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF2E8B57)
                     )
-                    Text(location, fontSize = 14.sp, color = Color.Gray)
+                    Text(region ?: "", fontSize = 14.sp, color = Color.Gray)
 
                     // Info Cards Grid
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

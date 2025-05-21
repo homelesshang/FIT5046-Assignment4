@@ -48,7 +48,7 @@ fun EditProfileScreen(
     }
     var name by remember { mutableStateOf(profile!!.nickname) }
     var birthday by remember { mutableStateOf(profile!!.birthday ?: "") }
-    var region by remember { mutableStateOf("Melbourne, Australia") }
+    var region by remember { mutableStateOf(profile!!.region ?: "") }
     var weight by remember { mutableStateOf(profile!!.weight?.toString() ?: "") }
     var height by remember { mutableStateOf(profile!!.height?.toString() ?: "") }
     val green = Color(0xFF2E8B57)
@@ -72,6 +72,7 @@ fun EditProfileScreen(
                 Text(
                     text = "Edit Profile",
                     style = MaterialTheme.typography.titleLarge,
+                    color = green,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -178,19 +179,48 @@ fun EditProfileScreen(
                     )
                 }
 
+
+
                 item {
-                    OutlinedTextField(
-                        value = region,
-                        onValueChange = { region = it },
-                        label = { Text("Region") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = green,
-                            unfocusedBorderColor = green,
-                            focusedLabelColor = green,
-                            cursorColor = green
+                    val cities = listOf("Melbourne", "Sydney", "Brisbane", "Perth", "Adelaide", "Canberra", "Hobart", "Darwin")
+                    var expanded by remember { mutableStateOf(false) }
+
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        OutlinedTextField(
+                            value = region,
+                            onValueChange = { },
+                            readOnly = true,
+                            label = { Text("Region") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = green,
+                                unfocusedBorderColor = green,
+                                focusedLabelColor = green,
+                                cursorColor = green
+                            )
                         )
-                    )
+
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            cities.forEach { city ->
+                                DropdownMenuItem(
+                                    text = { Text(city) },
+                                    onClick = {
+                                        region = city
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
 
                 item {
@@ -262,7 +292,8 @@ fun EditProfileScreen(
                                     nickname = name,
                                     birthday = birthday,
                                     weight = weight.toFloatOrNull(),
-                                    height = height.toFloatOrNull()
+                                    height = height.toFloatOrNull(),
+                                    region = region
                                 )
                                 userProfileViewModel.updateProfile(updatedProfile)
                                 onBackClick()

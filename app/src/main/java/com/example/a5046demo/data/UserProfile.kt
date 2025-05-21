@@ -15,5 +15,7 @@ data class UserProfile(
 
     var height: Float? = null,
 
-    var birthday: String? = null
+    var birthday: String? = null,
+
+    var region:String? = null
 )
