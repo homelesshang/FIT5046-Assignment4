@@ -38,14 +38,10 @@ class AuthViewModel : ViewModel() {
             .requestEmail()
             .requestProfile()
             .requestId()
-            .requestIdToken("228885919086-9kt6e790ekk53bgsedqrq5sjkppcnuh4.apps.googleusercontent.com")
+            .requestIdToken("542302828277-ke8g17kogv1li2s6jtr8dd67f6snink9.apps.googleusercontent.com")
             .build()
 
-        Log.d(TAG, "Configuring Google Sign In with options: $gso")
-        val client = GoogleSignIn.getClient(context, gso)
-        // Clear any previous sign-in state
-        client.signOut()
-        return client
+        return GoogleSignIn.getClient(context, gso)
     }
 
     fun signInWithGoogle(idToken: String) {

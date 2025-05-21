@@ -36,11 +36,12 @@ fun StartAppNavigation() {
 
                 // ✅ 创建 ExerciseViewModel（带 userId）
                 val exerciseViewModel: ExerciseViewModel = viewModel(
+                    key = userId, // 🔥 告诉 Compose：userId 变了就重建 ViewModel
                     factory = ExerciseViewModelFactory(application, userId)
                 )
 
                 // ✅ 创建 UserProfileViewModel（带 userId）
-                val userProfileViewModel = remember {
+                val userProfileViewModel: UserProfileViewModel = remember(userId) {
                     UserProfileViewModel(application, userId)
                 }
 
