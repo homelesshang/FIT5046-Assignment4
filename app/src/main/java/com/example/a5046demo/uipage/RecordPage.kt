@@ -24,13 +24,16 @@ import com.example.a5046demo.R
 import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import android.util.Log
+import androidx.compose.material.rememberScaffoldState
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
-
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     val exerciseTypes = listOf("Cardio", "Strength", "Yoga", "HIIT", "Pilates")
     var selectedExercise by remember { mutableStateOf(exerciseTypes[0]) }
     var expanded by remember { mutableStateOf(false) }
@@ -41,9 +44,13 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     Log.d("RecordScreen", "Inserting record with userId = $userId")
     val records by viewModel.allRecords.collectAsState(initial = emptyList())
-
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+
         topBar = {
             TopAppBar(
                 title = {
@@ -56,6 +63,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF2E8B57))
             )
         }
+
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -195,7 +203,11 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     RadioButton(
                                         selected = selectedIntensity in label,
                                         onClick = { selectedIntensity = label.split(" ")[0] },
-                                        colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF2E8B57))
+                                        colors = RadioButtonDefaults.colors(
+                                            selectedColor = Color(
+                                                0xFF2E8B57
+                                            )
+                                        )
                                     )
                                     Text(
                                         text = label,
@@ -209,18 +221,36 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
 
                     Button(
                         onClick = {
-                            if (dateInput.isNotBlank() && durationInput.isNotBlank()) {
+                            errorMessage = null
+
+                            if (dateInput.isBlank()) {
+                                errorMessage = "❗ Please select a date"
+                            } else if (durationInput.isBlank()) {
+                                errorMessage = "❗ Duration is required"
+                            } else if (durationInput.toIntOrNull() == null || durationInput.toInt() <= 0) {
+                                errorMessage = "❗ Duration must be a valid number"
+                            }
+
+                            if (errorMessage != null) {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(errorMessage!!)
+                                }
+                                return@Button
+                            }
+
+                            try {
+                                val duration = durationInput.toInt()
                                 val record = ExerciseRecord(
                                     exerciseType = selectedExercise,
                                     date = dateInput,
-                                    duration = durationInput.toIntOrNull() ?: 0,
+                                    duration = duration,
                                     intensity = selectedIntensity,
                                     userId = userId
                                 )
+
                                 viewModel.insertRecord(record)
 
-                                //firebase upload
-                                val duration = record.duration
+                                // Firebase 上传
                                 val calories = duration * 3
                                 val intensityIndex = when (selectedIntensity.lowercase()) {
                                     "low" -> 0
@@ -231,34 +261,43 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
 
                                 viewModel.logExerciseToFirebase(
                                     uid = userId,
-                                    date = dateInput.replace("-", ""), // "yyyy-MM-dd" -> "yyyyMMdd"
+                                    date = dateInput.replace("-", ""),
                                     duration = duration,
                                     calories = calories,
                                     intensityIndex = intensityIndex
                                 )
-                                //new added end
 
+                                // 重置表单
                                 dateInput = ""
                                 durationInput = ""
-                                selectedExercise = exerciseTypes[0]
+                                selectedExercise = "Cardio"
                                 selectedIntensity = "Medium"
 
                                 onConfirm()
+                            } catch (e: Exception) {
+                                Log.e("RecordScreen", "Failed to insert record: ${e.message}", e)
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("⚠️ Failed to save record.")
+                                }
                             }
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57))
                     ) {
-                        Text("✅ CONFIRM", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "✅ CONFIRM",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
