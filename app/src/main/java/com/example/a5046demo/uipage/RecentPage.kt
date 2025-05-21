@@ -315,6 +315,13 @@ fun OverviewStatCard(
                                         axisRight.isEnabled = false
                                         description.isEnabled = false
                                         legend.isEnabled = false
+
+                                        //set no interaction
+                                        setTouchEnabled(false)
+                                        isDragEnabled = false
+                                        setScaleEnabled(false)
+                                        setPinchZoom(false)
+                                        isDoubleTapToZoomEnabled = false
                                         animateX(1000)
                                     }
                                 }
