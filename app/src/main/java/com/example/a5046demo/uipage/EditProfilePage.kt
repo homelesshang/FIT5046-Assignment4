@@ -32,6 +32,7 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
+import com.example.a5046demo.viewmodel.ExerciseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +54,7 @@ fun EditProfileScreen(
     var height by remember { mutableStateOf(profile!!.height?.toString() ?: "") }
     val green = Color(0xFF2E8B57)
     val context = LocalContext.current
+
 
     Scaffold(
         topBar = {
