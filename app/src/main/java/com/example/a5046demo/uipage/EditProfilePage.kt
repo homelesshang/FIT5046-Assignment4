@@ -1,5 +1,6 @@
 package com.example.a5046demo.uipage
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,6 +31,7 @@ import java.time.Instant
 import java.util.Locale
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,11 +47,12 @@ fun EditProfileScreen(
         return
     }
     var name by remember { mutableStateOf(profile!!.nickname) }
-    var birthday by remember { mutableStateOf(profile!!.birthday ?: "2000-01-01") }
+    var birthday by remember { mutableStateOf(profile!!.birthday ?: "") }
     var region by remember { mutableStateOf("Melbourne, Australia") }
     var weight by remember { mutableStateOf(profile!!.weight?.toString() ?: "") }
     var height by remember { mutableStateOf(profile!!.height?.toString() ?: "") }
     val green = Color(0xFF2E8B57)
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -223,14 +226,48 @@ fun EditProfileScreen(
                 item {
                     Button(
                         onClick = {
-                            val updatedProfile = profile!!.copy(
-                                nickname = name,
-                                birthday = birthday,
-                                weight = weight.toFloatOrNull(),
-                                height = height.toFloatOrNull()
-                            )
-                            userProfileViewModel.updateProfile(updatedProfile)
-                            onBackClick()
+                            val isNameValid = name.all { it.isLetter() } && name.isNotBlank()
+                            val isWeightValid = weight.toFloatOrNull() != null
+                            val isHeightValid = height.toFloatOrNull() != null
+
+                            if (!isNameValid || !isWeightValid || !isHeightValid) {
+                                if(!isNameValid)
+                                {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fix the name input errors before saving.Name could only include letters",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                else if(!isWeightValid)
+                                {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fix the weight input errors before saving.Weight could only be floats.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                else if(!isHeightValid)
+                                {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fix the height input errors before saving.Height could only be floats.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                return@Button
+                            }
+                            else{
+                                val updatedProfile = profile!!.copy(
+                                    nickname = name,
+                                    birthday = birthday,
+                                    weight = weight.toFloatOrNull(),
+                                    height = height.toFloatOrNull()
+                                )
+                                userProfileViewModel.updateProfile(updatedProfile)
+                                onBackClick()
+                            }
+
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = green),
                         modifier = Modifier
