@@ -49,22 +49,22 @@ fun StartAppNavigation() {
 
                 // ✅ 如果第一次登录该用户，插入默认 Profile 数据
                 LaunchedEffect(userId) {
-                    val isSynced = userProfileViewModel.syncUserProfileFromFirebase()
-                    if (!isSynced) {
-                        val dao = AppDatabase.getDatabase(application).userProfileDao()
-                        val existing = dao.getUserProfileOnce(userId)
-                        if (existing == null) {
-                            dao.insertOrUpdate(
-                                UserProfile(
-                                    userId = userId,
-                                    nickname = "New User",
-                                    weight = null,
-                                    height = null,
-                                    birthday = null
-                                )
+                    val synced = userProfileViewModel.syncUserProfileFromFirebase()
+
+                    if (!synced) {
+                        // 只在 Firebase 完全没数据时才插入默认
+                        userProfileViewModel.updateProfile(
+                            UserProfile(
+                                userId = userId,
+                                nickname = "New User",
+                                weight = null,
+                                height = null,
+                                birthday = null
                             )
-                            Log.d("InitProfile", "Inserted default profile for $userId")
-                        }
+                        )
+                        Log.d("InitProfile", "Inserted default profile for $userId")
+                    } else {
+                        Log.d("InitProfile", "Synced profile from Firebase for $userId")
                     }
                 }
 
