@@ -183,7 +183,7 @@ fun HomeScreen(
         }
 
         // 🔹 Weather Info (Always Shown)
-        WeatherCard()
+        WeatherCard(userProfileViewModel = viewModel)
 
         Spacer(modifier = Modifier.height(100.dp))
     }
@@ -210,12 +210,21 @@ fun ExerciseCard(title: String, kcal: Int, color: Color) {
 }
 
 @Composable
-fun WeatherCard(viewModel: WeatherViewModel = viewModel()) {
+fun WeatherCard(userProfileViewModel: UserProfileViewModel,viewModel: WeatherViewModel = viewModel()) {
     val weatherText by viewModel.weather.collectAsState()
+    val profile by userProfileViewModel.userProfile.collectAsState(initial = null)
+    if (profile == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    val region by remember { mutableStateOf(profile!!.region) }
+    val regionWithCountry = "$region,AU"
 
-    // 组件首次加载时获取天气
+
     LaunchedEffect(Unit) {
-        viewModel.fetchWeather("Melbourne,AU")
+        viewModel.fetchWeather(regionWithCountry)
     }
 
     Card(
@@ -232,7 +241,7 @@ fun WeatherCard(viewModel: WeatherViewModel = viewModel()) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "🌤️ Melbourne",
+                text = "\uD83C\uDF24\uFE0F Your location now:$region",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF2E8B57)
