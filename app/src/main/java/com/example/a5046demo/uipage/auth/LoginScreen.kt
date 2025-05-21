@@ -58,12 +58,12 @@ fun LoginScreen(
                     val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     Log.d(TAG, "Processing Google Sign In result...")
                     val account = task.getResult(ApiException::class.java)
-                    account?.email?.let { email ->
-                        Log.d(TAG, "Google Sign In success: $email")
-                        viewModel.signInWithGoogle(email)
+                    account?.idToken?.let { idToken ->
+                        Log.d(TAG, "Got Google ID Token: $idToken")
+                        viewModel.signInWithGoogle(idToken)
                     } ?: run {
-                        showError = "Failed to get email from Google account"
-                        Log.e(TAG, "No email found in Google account")
+                        showError = "Failed to get ID token from Google account"
+                        Log.e(TAG, "No ID token found in Google account")
                     }
                 } catch (e: ApiException) {
                     val errorMessage = when (e.statusCode) {
