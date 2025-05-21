@@ -43,6 +43,11 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed // only if you use them
+import androidx.compose.foundation.lazy.rememberLazyListState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,7 +108,7 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
             )
         }
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it) //
@@ -112,45 +117,51 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,onClose: () -> Unit = 
         ) {
 
             // 欢迎语 + 总结语
-            Text(
-                text = "Your Weekly Summary",
-                fontSize = 14.sp,
-                color = Color(0xFF2E8B57),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
+            item {
+                Text(
+                    text = "Your Weekly Summary",
+                    fontSize = 14.sp,
+                    color = Color(0xFF2E8B57)
+                    //modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
             // 卡片：Weight
-            OverviewStatCard(
-                icon = Icons.Default.MoreVert,
-                title = "Weight 🃏",
-                value = weights.lastOrNull() ?: 0f,
-                barData = weights,
-                unitA = "KG",
-                unitB = "LBS",
-                labels = labels
-            )
-
+            item {
+                OverviewStatCard(
+                    icon = Icons.Default.MoreVert,
+                    title = "Weight 🃏",
+                    value = weights.lastOrNull() ?: 0f,
+                    barData = weights,
+                    unitA = "KG",
+                    unitB = "LBS",
+                    labels = labels
+                )
+            }
             // 卡片：Calories
-            OverviewStatCard(
-                icon = Icons.Default.MoreVert,
-                title = "Calories 🔥",
-                value = calories.lastOrNull() ?: 0f,
-                barData = calories,
-                unitA = "Calories",
-                unitB = "KJ",
-                labels = labels
-            )
+            item {
+                OverviewStatCard(
+                    icon = Icons.Default.MoreVert,
+                    title = "Calories 🔥",
+                    value = calories.lastOrNull() ?: 0f,
+                    barData = calories,
+                    unitA = "Calories",
+                    unitB = "KJ",
+                    labels = labels
+                )
+            }
 
             // 卡片：Workout Time
-            OverviewStatCard(
-                icon = Icons.Default.MoreVert,
-                title = "Workout Time ⏱️",
-                value = durations.lastOrNull() ?: 0f,
-                barData = durations,
-                unitA = "Mins",
-                unitB = "Hours",
-                labels = labels
-            )
+            item {
+                OverviewStatCard(
+                    icon = Icons.Default.MoreVert,
+                    title = "Workout Time ⏱️",
+                    value = durations.lastOrNull() ?: 0f,
+                    barData = durations,
+                    unitA = "Mins",
+                    unitB = "Hours",
+                    labels = labels
+                )
+            }
         }
     }
 }
