@@ -113,19 +113,7 @@ fun EditProfileScreen(
                                     .clip(CircleShape)
                             )
 
-                            IconButton(
-                                onClick = { /* TODO: handle profile picture edit */ },
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .background(Color.White, CircleShape)
-                                    .padding(4.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "Edit Profile Picture",
-                                    tint = green
-                                )
-                            }
+
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
