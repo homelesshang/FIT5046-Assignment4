@@ -250,7 +250,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
 
                                 viewModel.insertRecord(record)
 
-                                // Firebase 上传
+
                                 val calories = duration * 3
                                 val intensityIndex = when (selectedIntensity.lowercase()) {
                                     "low" -> 0
@@ -267,7 +267,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     intensityIndex = intensityIndex
                                 )
 
-                                // 重置表单
+
                                 dateInput = ""
                                 durationInput = ""
                                 selectedExercise = "Cardio"

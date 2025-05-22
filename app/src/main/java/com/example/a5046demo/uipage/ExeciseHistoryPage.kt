@@ -90,7 +90,7 @@ fun ExerciseHistoryScreen(viewModel: ExerciseViewModel,navController: NavHostCon
         }
     }
 
-    // 👇 编辑弹窗
+
     if (editingRecord != null) {
         EditRecordDialog(
             record = editingRecord!!,
@@ -102,7 +102,7 @@ fun ExerciseHistoryScreen(viewModel: ExerciseViewModel,navController: NavHostCon
         )
     }
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditRecordDialog(
     record: ExerciseRecord,
@@ -111,14 +111,24 @@ fun EditRecordDialog(
 ) {
     var updatedType by remember { mutableStateOf(record.exerciseType) }
     var updatedDuration by remember { mutableStateOf(record.duration.toString()) }
+    var expanded by remember { mutableStateOf(false) }
+    var durationError by remember { mutableStateOf(false) }
+    val exerciseTypes = listOf("Cardio", "Strength", "Yoga", "HIIT", "Pilates")
 
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
+                val duration = updatedDuration.toIntOrNull()
+                if (duration == null || duration <= 0) {
+                    durationError = true
+                    return@TextButton
+                }
+
+                durationError = false
                 val updated = record.copy(
                     exerciseType = updatedType,
-                    duration = updatedDuration.toIntOrNull() ?: record.duration
+                    duration = duration
                 )
                 onConfirm(updated)
             }) {
@@ -133,24 +143,56 @@ fun EditRecordDialog(
         title = { Text("Edit Record") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = updatedType,
-                    onValueChange = { updatedType = it },
-                    label = { Text("Exercise Type") }
-                )
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = updatedType,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Exercise Type") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        exerciseTypes.forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type) },
+                                onClick = {
+                                    updatedType = type
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
                 OutlinedTextField(
                     value = updatedDuration,
-                    onValueChange = { updatedDuration = it },
+                    onValueChange = {
+                        updatedDuration = it
+                        durationError = false
+                    },
                     label = { Text("Duration (minutes)") },
-
+                    isError = durationError,
+                    modifier = Modifier.fillMaxWidth()
                 )
+
+                if (durationError) {
+                    Text(
+                        text = "Please enter a valid positive number",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
             }
         }
     )
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewExerciseHistoryCrudScreen() {
-//    ExerciseHistoryScreen(viewModel = /* 传一个 mock ViewModel 或用 fake 数据 */)
-//}
