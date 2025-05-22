@@ -60,7 +60,7 @@ fun ExerciseHistoryScreen(viewModel: ExerciseViewModel,navController: NavHostCon
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F2F1))
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFCCF5CC))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("📅 ${record.date}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
