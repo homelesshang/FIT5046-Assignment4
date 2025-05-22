@@ -137,7 +137,6 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
 
-            // 欢迎语 + 总结语
             item {
                 Text(
                     text = "Your Weekly Summary",
@@ -146,7 +145,7 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,
                     //modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
-            // 卡片：Weight
+
             item {
                 OverviewStatCard(
                     icon = Icons.Default.MoreVert,
@@ -158,7 +157,7 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,
                     labels = weightLabels
                 )
             }
-            // 卡片：Calories
+
             item {
                 OverviewStatCard(
                     icon = Icons.Default.MoreVert,
@@ -171,7 +170,6 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,
                 )
             }
 
-            // 卡片：Workout Time
             item {
                 OverviewStatCard(
                     icon = Icons.Default.MoreVert,

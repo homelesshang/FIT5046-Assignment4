@@ -34,13 +34,13 @@ fun StartAppNavigation() {
             if (userId != null) {
                 val application = context.applicationContext as Application
 
-                // ✅ 创建 ExerciseViewModel（带 userId）
+
                 val exerciseViewModel: ExerciseViewModel = viewModel(
-                    key = userId, // 🔥 告诉 Compose：userId 变了就重建 ViewModel
+                    key = userId,
                     factory = ExerciseViewModelFactory(application, userId)
                 )
 
-                // ✅ 创建 UserProfileViewModel（带 userId）
+
                 val userProfileViewModel: UserProfileViewModel = remember(userId) {
                     UserProfileViewModel(application, userId)
                 }
@@ -66,7 +66,7 @@ fun StartAppNavigation() {
                     }
 
 
-                // ✅ 进入主界面（带底部导航栏）
+
                 MainAppScaffold(
                     navController = navController,
                     authViewModel = authViewModel,
@@ -74,7 +74,6 @@ fun StartAppNavigation() {
                     userProfileViewModel = userProfileViewModel
                 )
             } else {
-                // 万一 UID 拿不到（不太可能），回登录页
                 AuthNavHost(navController = navController, viewModel = authViewModel)
             }
         }

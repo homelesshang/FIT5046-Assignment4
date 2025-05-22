@@ -98,7 +98,7 @@ fun EditProfileScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 24.dp),  // 给点顶部间距
+                            .padding(top = 24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Box(
@@ -320,7 +320,7 @@ fun EditProfileScreen(
                         TextButton(onClick = {
                             val millis = datePickerState.selectedDateMillis
                             if (millis != null) {
-                                birthday = formatter.format(Date(millis)) // set birthday
+                                birthday = formatter.format(Date(millis))
                             }
                             showDatePicker = false
                         }) {
