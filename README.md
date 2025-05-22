@@ -12,25 +12,10 @@ A modern Android fitness tracking app built using **Jetpack Compose**, **Room**,
 - 📈 Visual progress reports with bar charts
 - 📝 Form-based workout input with validation
 - 🧭 Bottom Navigation Bar for smooth navigation
-- 🕒 Android WorkManager (coming soon)
 - 📅 Integrated Date Picker and Exercise Type Dropdown
 
 ---
 
-## ✅ Functionalities and Status
-
-| **Functionality**                         | **Status**             |
-|------------------------------------------|------------------------|
-| 🔐 Google Authentication                 | ✅ Fully Implemented   |
-| ☁️ Firebase Realtime Database            | ✅ Fully Implemented   |
-| 💾 Room Local Database                   | ✅ Fully Implemented   | 
-| 📝 Form Input for Workout Details        | ✅ Fully Implemented   |
-| 📊 Visual Progress Reports (Bar Graphs)  | ✅ Fully Implemented |
-| 🧭 Navigation Bar                        | ✅ Fully Implemented   |
-| 📜 LazyColumn Workout Log List           | ✅ Fully Implemented   |
-| 📅 Date Picker and Dropdown Menus        | ✅ Fully Implemented   |
-
----
 
 ## 📱 Screens Overview
 
@@ -68,7 +53,7 @@ Simply paste this repo URL when using "Get from Version Control" in Android Stud
 
 3. Replace `google-services.json` with your own Firebase config.
 
-4. Build and Run on Android Emulator or real device.
+4. Build and Run on Android Emulator.
 
 ---
 
