@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserProfileDao {
 
     @Query("SELECT * FROM user_profile WHERE userId = :userId LIMIT 1")
-    fun getUserProfile(userId: String): Flow<UserProfile?>  // ✅ UI 用
+    fun getUserProfile(userId: String): Flow<UserProfile?>
 
 
     @Query("SELECT * FROM user_profile WHERE userId = :userId LIMIT 1")

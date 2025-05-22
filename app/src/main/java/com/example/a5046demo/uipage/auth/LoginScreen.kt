@@ -1,7 +1,6 @@
 package com.example.a5046demo.uipage.auth
 
 import android.app.Activity
-import android.content.Context
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.a5046demo.components.*
-import com.example.a5046demo.uipage.*
 import com.example.a5046demo.uipage.navigation.AuthRoutes
 import com.example.a5046demo.uipage.navigation.HomePageRoutes
 import com.example.a5046demo.viewmodel.AuthState

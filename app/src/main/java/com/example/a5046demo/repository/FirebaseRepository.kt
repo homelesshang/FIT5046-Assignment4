@@ -75,7 +75,7 @@ class FirebaseRepository {
 
         val updated = DailyStat(
             date = date,
-            weight = weight, // <-- this overwrites any previous weight
+            weight = weight,
             totalCaloriesBurned = existing?.totalCaloriesBurned ?: 0,
             totalExerciseTime = existing?.totalExerciseTime ?: 0,
             exerciseCounts = existing?.exerciseCounts ?: listOf(0, 0, 0)

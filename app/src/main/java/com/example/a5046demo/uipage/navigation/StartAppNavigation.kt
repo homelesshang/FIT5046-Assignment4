@@ -46,7 +46,6 @@ fun StartAppNavigation() {
                 }
 
 
-
                 LaunchedEffect(userId) {
                         val synced = userProfileViewModel.syncUserProfileFromFirebase()
                         if (!synced) {

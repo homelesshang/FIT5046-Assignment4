@@ -1,8 +1,6 @@
 package com.example.a5046demo.uipage.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
-import androidx.compose.material3.NavigationBar
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -17,7 +15,6 @@ import com.example.a5046demo.uipage.RecordScreen
 import com.example.a5046demo.viewmodel.AuthViewModel
 import com.example.a5046demo.viewmodel.ExerciseViewModel
 import com.example.a5046demo.viewmodel.UserProfileViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 
