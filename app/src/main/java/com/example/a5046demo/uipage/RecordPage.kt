@@ -251,7 +251,23 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                 viewModel.insertRecord(record)
 
 
-                                val calories = duration * 3
+                                val intensityMultiplier = when (selectedIntensity.lowercase()) {
+                                    "low" -> 3
+                                    "medium" -> 5
+                                    "high" -> 8
+                                    else -> 4
+                                }
+
+                                val typeMultiplier = when (selectedExercise.lowercase()) {
+                                    "cardio" -> 1.2f
+                                    "strength" -> 1.0f
+                                    "yoga" -> 0.8f
+                                    "hiit" -> 1.5f
+                                    else -> 1.0f
+                                }
+
+                                val calories = (duration * intensityMultiplier * typeMultiplier).toInt()
+
                                 val intensityIndex = when (selectedIntensity.lowercase()) {
                                     "low" -> 0
                                     "medium" -> 1

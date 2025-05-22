@@ -264,11 +264,22 @@ fun OverviewStatCard(
                 if (isBack) {
                     Text(
                         text = when (title) {
-                            "Weight 🃏" -> "You are 5.0 kg lighter than last week"
-                            "Calories 🔥" -> "You averaged 800 kcal/day last week"
-                            "Workout Time ⏱️" -> "Workout increased by 20%"
+                            "Weight 🃏" -> {
+                                val totalLogs = barData.count { it > 0f }
+                                if (totalLogs == 0) "Start logging today!"
+                                else "You did $totalLogs workouts this week. Way to go king 👑"
+                            }
+                            "Calories 🔥" -> {
+                                val totalCalories = barData.sum().toInt()
+                                "You burned $totalCalories Calories this week 🔥"
+                            }
+                            "Workout Time ⏱️" -> {
+                                val totalMinutes = barData.sum().toInt()
+                                "You exercised $totalMinutes minutes this week 💪"
+                            }
                             else -> "Keep up the good work!"
-                        },
+                        }
+                        ,
                         color = barColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
@@ -303,7 +314,7 @@ fun OverviewStatCard(
                                             valueTextColor = android.graphics.Color.TRANSPARENT
                                             lineWidth = 2f
                                             circleRadius = 3f
-                                            mode = LineDataSet.Mode.CUBIC_BEZIER
+                                            mode = LineDataSet.Mode.LINEAR
                                         }
 
                                         data = LineData(dataSet)

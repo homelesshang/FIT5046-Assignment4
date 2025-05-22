@@ -6,6 +6,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.example.a5046demo.model.DailyStat
 import kotlinx.coroutines.tasks.await
+import com.example.a5046demo.repository.FirebaseRepository
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class FirebaseRepository {
     private val db = Firebase.firestore
@@ -53,4 +56,32 @@ class FirebaseRepository {
             null
         }
     }
+
+    suspend fun updateWeight(userId: String, date: String, weight: Float) {
+        val db = FirebaseFirestore.getInstance()
+
+        // 1. Update user profile weight
+        db.collection("users").document(userId)
+            .update("weight", weight)
+
+        // 2. Upsert daily stat with weight
+        val docRef = db.collection("users")
+            .document(userId)
+            .collection("dailyStats")
+            .document(date)
+
+        val snapshot = docRef.get().await()
+        val existing = snapshot.toObject(DailyStat::class.java)
+
+        val updated = DailyStat(
+            date = date,
+            weight = weight, // <-- this overwrites any previous weight
+            totalCaloriesBurned = existing?.totalCaloriesBurned ?: 0,
+            totalExerciseTime = existing?.totalExerciseTime ?: 0,
+            exerciseCounts = existing?.exerciseCounts ?: listOf(0, 0, 0)
+        )
+
+        docRef.set(updated).await()
+    }
+
 }

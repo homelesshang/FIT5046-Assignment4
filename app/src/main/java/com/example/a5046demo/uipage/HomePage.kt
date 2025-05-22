@@ -30,6 +30,8 @@ import com.example.a5046demo.viewmodel.ExerciseViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavHostController
 import com.example.a5046demo.uipage.navigation.HomePageRoutes
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun HomeScreen(
@@ -39,6 +41,10 @@ fun HomeScreen(
 ) {
     val profile by viewModel.userProfile.collectAsState(initial = null)
     val todayStats by exerciseViewModel.todayStats.collectAsState()
+    val showDialog = remember { mutableStateOf(false) }
+    val inputWeight = remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+
 
     LaunchedEffect(Unit) {
         exerciseViewModel.loadTodayStats()
@@ -158,6 +164,19 @@ fun HomeScreen(
                         Text("Body Weight", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         Text("Current: $weight", fontSize = 14.sp, color = Color.White)
                     }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = { showDialog.value = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Text("New Weight", color = Color(0xFF2E8B57))
+                        }
+                    }
+
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -175,6 +194,45 @@ fun HomeScreen(
                         Text("Lower Strength", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
+                if (showDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog.value = false },
+                        title = { Text("Update Today's Weight") },
+                        text = {
+                            OutlinedTextField(
+                                value = inputWeight.value,
+                                onValueChange = { inputWeight.value = it },
+                                label = { Text("Enter weight (kg)") },
+                                singleLine = true
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val newWeight = inputWeight.value.toFloatOrNull()
+                                if (newWeight != null) {
+                                    val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+                                    scope.launch {
+                                        com.example.a5046demo.repository.FirebaseRepository().updateWeight(
+                                            userId = profile!!.userId,
+                                            date = today,
+                                            weight = newWeight
+                                        )
+                                        viewModel.updateLocalWeight(newWeight)
+                                    }
+                                }
+                                showDialog.value = false
+                            }) {
+                                Text("Confirm")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDialog.value = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+                }
+
             }
         }
 

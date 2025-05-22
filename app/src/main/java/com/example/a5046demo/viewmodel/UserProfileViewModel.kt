@@ -11,6 +11,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class UserProfileViewModel(application: Application, private val userId: String) : AndroidViewModel(application) {
@@ -18,7 +20,11 @@ class UserProfileViewModel(application: Application, private val userId: String)
     private val userProfileDao = AppDatabase.getDatabase(application).userProfileDao()
     private val firebaseRepository = FirebaseRepository()
 
-    val userProfile: Flow<UserProfile?> = userProfileDao.getUserProfile(userId)
+    val userProfileFromDao: Flow<UserProfile?> = userProfileDao.getUserProfile(userId)
+
+    private val _userProfile = MutableStateFlow<UserProfile?>(null)
+    val userProfile: StateFlow<UserProfile?> = _userProfile
+
 
     fun insertLocalProfile(profile: UserProfile) = viewModelScope.launch(Dispatchers.IO) {
         userProfileDao.insertOrUpdate(profile)
@@ -45,4 +51,19 @@ class UserProfileViewModel(application: Application, private val userId: String)
             false
         }
     }
+    fun updateLocalWeight(newWeight: Float) {
+        val current = _userProfile.value
+        if (current != null) {
+            _userProfile.value = current.copy(weight = newWeight)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            userProfileFromDao.collect {
+                _userProfile.value = it
+            }
+        }
+    }
+
 }
