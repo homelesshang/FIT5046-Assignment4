@@ -115,13 +115,6 @@ fun GreenStatsPageWithHeader(viewModel: ExerciseViewModel,
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = {
-                        // TODO: Handle share
-                    }) {
-                        Icon(Icons.Default.Share, contentDescription = "Share")
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                     titleContentColor = Color(0xFF2E8B57)
