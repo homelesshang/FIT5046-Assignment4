@@ -73,6 +73,7 @@ class AuthViewModel : ViewModel() {
 
     fun register(email: String, password: String, dateOfBirth: String) {
         _authState.value = AuthState.Loading
+
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -80,10 +81,29 @@ class AuthViewModel : ViewModel() {
                     val uid = user?.uid
 
                     if (uid != null) {
+                        val nickname = email.substringBefore("@")
+
+                        val userData = mapOf(
+                            "userId" to uid,
+                            "email" to email,
+                            "nickname" to nickname,
+                            "dateOfBirth" to dateOfBirth,
+                            "region" to "",
+                            "height" to null,
+                            "weight" to null
+                        )
+
                         Firebase.firestore.collection("users").document(uid)
-                            .set(mapOf("email" to email, "dateOfBirth" to dateOfBirth))
+                            .set(userData)
+                            .addOnSuccessListener {
+                                _authState.value = AuthState.Success(uid)
+                            }
+                            .addOnFailureListener { e ->
+                                _authState.value = AuthState.Error("Profile save failed: ${e.message}")
+                            }
+                    } else {
+                        _authState.value = AuthState.Error("Missing user ID")
                     }
-                    _authState.value = AuthState.Success(uid ?: "Registered")
                 } else {
                     _authState.value = AuthState.Error(task.exception?.message ?: "Registration failed")
                 }
