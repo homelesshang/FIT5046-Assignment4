@@ -196,23 +196,22 @@ fun OverviewStatCard(
     unitB: String,
     containerColor: Color = Color(0xFFD0F0C0),
     barColor: Color = Color(0xFF2E8B57),
-
-    ) {
+) {
     var useAltUnit by remember { mutableStateOf(false) }
     val max = barData.maxOrNull()?.takeIf { it > 0 } ?: 1f
     val displayedUnit = if (useAltUnit) unitB else unitA
     var showBack by remember { mutableStateOf(false) }
+
     val convertedValue = if (useAltUnit) {
         when (title) {
-            "Weight 🃏" -> String.format("%.1f %s", value * 2.2f, unitB) //kg convert lbs
-            "Workout Time ⏱️" -> String.format("%.1f %s", value / 60f, unitB) //min convert hour
-            "Calories 🔥" -> String.format("%.0f %s", value * 4.184f, unitB) // kcal convert KJ
+            "Weight 🃏" -> String.format("%.1f %s", value * 2.2f, unitB)
+            "Workout Time ⏱️" -> String.format("%.1f %s", value / 60f, unitB)
+            "Calories 🔥" -> String.format("%.0f %s", value * 4.184f, unitB)
             else -> String.format("%.1f %s", value, unitB)
         }
     } else {
         String.format("%.1f %s", value, unitA)
     }
-
 
     Card(
         modifier = Modifier
@@ -240,10 +239,8 @@ fun OverviewStatCard(
                         modifier = Modifier.size(32.dp)
                     ) {
                         IconButton(
-                            onClick = {
-                                useAltUnit = !useAltUnit
-                            },
-                            modifier = Modifier.pointerInput(32.dp) {} // prevent click-through
+                            onClick = { useAltUnit = !useAltUnit },
+                            modifier = Modifier.pointerInput(32.dp) {}
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Cached,
@@ -257,10 +254,7 @@ fun OverviewStatCard(
                 }
             }
 
-            AnimatedContent(
-                targetState = showBack,
-                label = "CardFlip"
-            ) { isBack ->
+            AnimatedContent(targetState = showBack, label = "CardFlip") { isBack ->
                 if (isBack) {
                     Text(
                         text = when (title) {
@@ -278,8 +272,7 @@ fun OverviewStatCard(
                                 "You exercised $totalMinutes minutes this week 💪"
                             }
                             else -> "Keep up the good work!"
-                        }
-                        ,
+                        },
                         color = barColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
@@ -288,9 +281,7 @@ fun OverviewStatCard(
                             .padding(top = 8.dp)
                     )
                 } else {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = convertedValue,
                             fontSize = 28.sp,
@@ -314,7 +305,7 @@ fun OverviewStatCard(
                                             valueTextColor = android.graphics.Color.TRANSPARENT
                                             lineWidth = 2f
                                             circleRadius = 3f
-                                            mode = LineDataSet.Mode.LINEAR
+                                            mode = LineDataSet.Mode.LINEAR // STRAIGHT lines
                                         }
 
                                         data = LineData(dataSet)
@@ -327,33 +318,73 @@ fun OverviewStatCard(
                                             textColor = android.graphics.Color.GRAY
                                         }
 
-                                        //axisLeft.setDrawGridLines(false)
-                                        //axisLeft.textColor = android.graphics.Color.GRAY
                                         axisLeft.apply {
-                                            setDrawGridLines(false)              // Remove horizontal grid lines
+                                            axisMinimum = 0f // Start from 0
+                                            setDrawGridLines(false)
                                             textColor = android.graphics.Color.GRAY
-                                            textSize =
-                                                10f                       // Smaller font size
-                                            setLabelCount(
-                                                3,
-                                                true
-                                            )              // Limit to 3 clean labels
-                                            axisLineColor =
-                                                android.graphics.Color.TRANSPARENT // Hide Y axis line
+                                            textSize = 10f
+                                            setLabelCount(3, true)
+                                            axisLineColor = android.graphics.Color.TRANSPARENT
                                         }
 
                                         axisRight.isEnabled = false
                                         description.isEnabled = false
                                         legend.isEnabled = false
 
-                                        //set no interaction
                                         setTouchEnabled(false)
                                         isDragEnabled = false
                                         setScaleEnabled(false)
                                         setPinchZoom(false)
                                         isDoubleTapToZoomEnabled = false
+
                                         animateX(1000)
+                                        invalidate() // Forces redraw
                                     }
+                                },update = { chart -> // ✅ this block runs every recomposition
+                                    val entries = barData.mapIndexed { index, value ->
+                                        Entry(index.toFloat(), value)
+                                    }
+
+                                    val dataSet = LineDataSet(entries, "Weight").apply {
+                                        color = android.graphics.Color.parseColor("#2E8B57")
+                                        setCircleColor(android.graphics.Color.parseColor("#2E8B57"))
+                                        valueTextColor = android.graphics.Color.TRANSPARENT
+                                        lineWidth = 2f
+                                        circleRadius = 3f
+                                        mode = LineDataSet.Mode.LINEAR
+                                    }
+
+                                    chart.data = LineData(dataSet)
+
+                                    chart.xAxis.apply {
+                                        position = XAxis.XAxisPosition.BOTTOM
+                                        valueFormatter = IndexAxisValueFormatter(labels)
+                                        granularity = 1f
+                                        setDrawGridLines(false)
+                                        textColor = android.graphics.Color.GRAY
+                                    }
+
+                                    chart.axisLeft.apply {
+                                        axisMinimum = 0f
+                                        setDrawGridLines(false)
+                                        textColor = android.graphics.Color.GRAY
+                                        textSize = 10f
+                                        setLabelCount(3, true)
+                                        axisLineColor = android.graphics.Color.TRANSPARENT
+                                    }
+
+                                    chart.axisRight.isEnabled = false
+                                    chart.description.isEnabled = false
+                                    chart.legend.isEnabled = false
+
+                                    chart.setTouchEnabled(false)
+                                    chart.isDragEnabled = false
+                                    chart.setScaleEnabled(false)
+                                    chart.setPinchZoom(false)
+                                    chart.isDoubleTapToZoomEnabled = false
+
+                                    chart.animateX(1000)
+                                    chart.invalidate() // 🔁 force re-render
                                 }
                             )
                         } else {
@@ -374,7 +405,7 @@ fun OverviewStatCard(
                                         Box(
                                             modifier = Modifier
                                                 .width(10.dp)
-                                                .fillMaxHeight(fraction = item / max),
+                                                .fillMaxHeight(item / max),
                                             contentAlignment = Alignment.BottomCenter
                                         ) {
                                             Canvas(modifier = Modifier.fillMaxSize()) {
@@ -387,8 +418,6 @@ fun OverviewStatCard(
                                         }
                                     }
                                 }
-
-                                // Labels row, now guaranteed to be inside the chart area
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -407,6 +436,7 @@ fun OverviewStatCard(
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
