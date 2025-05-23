@@ -13,11 +13,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.a5046demo.R
 import com.example.a5046demo.components.*
 import com.example.a5046demo.uipage.navigation.AuthRoutes
 import com.example.a5046demo.uipage.navigation.HomePageRoutes
@@ -216,7 +218,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(
-                imageVector = Icons.Default.Person,
+                painter = painterResource(id = R.drawable.icongoogle),
                 contentDescription = "Google Icon",
                 modifier = Modifier.size(24.dp)
             )
