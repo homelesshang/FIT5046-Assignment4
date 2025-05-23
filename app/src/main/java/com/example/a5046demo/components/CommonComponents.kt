@@ -12,6 +12,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
+/**
+ * Custom reusable text field for FitNest app.
+ *
+ * @param value Current input text.
+ * @param onValueChange Callback to update text.
+ * @param label Label text displayed in the field.
+ * @param isPassword Whether to hide the input (used for passwords).
+ * @param keyboardOptions Keyboard configuration.
+ * @param modifier Optional layout modifier.
+ */
 @Composable
 fun FitNestTextField(
     value: String,
@@ -36,6 +46,14 @@ fun FitNestTextField(
     )
 }
 
+/**
+ * Primary filled button used across FitNest app.
+ *
+ * @param onClick Action triggered on button press.
+ * @param text Text label to display on the button.
+ * @param modifier Optional layout modifier.
+ * @param enabled Whether the button is clickable.
+ */
 @Composable
 fun FitNestButton(
     onClick: () -> Unit,
@@ -59,6 +77,15 @@ fun FitNestButton(
     }
 }
 
+/**
+ * Outlined-style button with optional custom content.
+ *
+ * @param onClick Action triggered on button press.
+ * @param text Default text label (can be overridden in content).
+ * @param modifier Optional layout modifier.
+ * @param enabled Whether the button is clickable.
+ * @param content Custom content inside the button (icon + text, etc.)
+ */
 @Composable
 fun FitNestOutlinedButton(
     onClick: () -> Unit,
@@ -84,6 +111,13 @@ fun FitNestOutlinedButton(
     }
 }
 
+/**
+ * Top app bar with centered title and optional back navigation button.
+ *
+ * @param title Title text displayed in the center.
+ * @param showBackButton Whether to show the back arrow icon.
+ * @param onBackClick Callback triggered when back button is clicked.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FitNestTopBar(

@@ -6,13 +6,27 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.example.a5046demo.model.DailyStat
 import kotlinx.coroutines.tasks.await
-import com.example.a5046demo.repository.FirebaseRepository
 import com.google.firebase.firestore.FirebaseFirestore
 
-
+/**
+ * Repository class that handles interaction with Firebase Firestore.
+ * Manages user profile data and daily exercise statistics stored remotely.
+ */
 class FirebaseRepository {
+
+    // Reference to the Firestore database
     private val db = Firebase.firestore
 
+    /**
+     * Logs an exercise session into Firestore under the current user's daily statistics.
+     * If a record for the given date already exists, the data is incrementally updated.
+     *
+     * @param uid User ID (usually Firebase UID).
+     * @param date Date of the exercise session (e.g., "2025-05-23").
+     * @param duration Duration of the exercise in minutes.
+     * @param calories Calories burned during the session.
+     * @param intensityIndex Index indicating exercise intensity: 0 = low, 1 = medium, 2 = high.
+     */
     suspend fun logExercise(
         uid: String,
         date: String,
@@ -41,6 +55,12 @@ class FirebaseRepository {
         docRef.set(updated).await()
     }
 
+    /**
+     * Retrieves a user's profile from Firestore.
+     *
+     * @param uid The user ID.
+     * @return The corresponding UserProfile if found, or null if not available.
+     */
     suspend fun getUserProfile(uid: String): UserProfile? {
         return try {
             val snapshot = db.collection("users").document(uid).get().await()
@@ -57,14 +77,21 @@ class FirebaseRepository {
         }
     }
 
+    /**
+     * Updates the user's weight in both the profile and the daily log for a specific date.
+     *
+     * @param userId Firebase UID of the user.
+     * @param date The date to associate with the new weight value.
+     * @param weight The user's weight in kilograms.
+     */
     suspend fun updateWeight(userId: String, date: String, weight: Float) {
         val db = FirebaseFirestore.getInstance()
 
-        // 1. Update user profile weight
+        // 1. Update weight in user profile
         db.collection("users").document(userId)
             .update("weight", weight)
 
-        // 2. Upsert daily stat with weight
+        // 2. Upsert weight into the corresponding dailyStat document
         val docRef = db.collection("users")
             .document(userId)
             .collection("dailyStats")
@@ -83,5 +110,4 @@ class FirebaseRepository {
 
         docRef.set(updated).await()
     }
-
 }
