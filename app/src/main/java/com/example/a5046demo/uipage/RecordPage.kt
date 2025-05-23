@@ -22,19 +22,20 @@ import java.util.Date
 import androidx.compose.ui.res.painterResource
 import com.example.a5046demo.R
 import androidx.compose.ui.platform.LocalContext
-import android.content.Context
 import android.util.Log
-import androidx.compose.material.rememberScaffoldState
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    // Predefined exercise types
     val exerciseTypes = listOf("Cardio", "Strength", "Yoga", "HIIT", "Pilates")
+
+    // State variables for form input
     var selectedExercise by remember { mutableStateOf(exerciseTypes[0]) }
     var expanded by remember { mutableStateOf(false) }
     var dateInput by remember { mutableStateOf("") }
@@ -42,28 +43,20 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
     var selectedIntensity by remember { mutableStateOf("Medium") }
 
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-    Log.d("RecordScreen", "Inserting record with userId = $userId")
+
     val records by viewModel.allRecords.collectAsState(initial = emptyList())
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
-
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "📋 Log Your Progress",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("📋 Log Your Progress", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF2E8B57))
             )
         }
-
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -82,11 +75,10 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                         fontSize = 18.sp,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF444444),
-                        modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
+                        color = Color(0xFF444444)
                     )
 
-                    // Exercise Type
+                    // Exercise type dropdown
                     Column {
                         Text("🏃 Exercise Type", fontSize = 16.sp, color = Color.Gray)
                         ExposedDropdownMenuBox(
@@ -122,8 +114,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                         }
                     }
 
-                    // Date
-
+                    // Date input with DatePicker
                     var showDatePicker by remember { mutableStateOf(false) }
                     val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
                     val datePickerState = rememberDatePickerState(
@@ -162,21 +153,17 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                         dateInput = formatter.format(Date(millis))
                                     }
                                     showDatePicker = false
-                                }) {
-                                    Text("OK")
-                                }
+                                }) { Text("OK") }
                             },
                             dismissButton = {
-                                TextButton(onClick = { showDatePicker = false }) {
-                                    Text("Cancel")
-                                }
+                                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
                             }
                         ) {
                             DatePicker(state = datePickerState)
                         }
                     }
 
-                    // Duration
+                    // Duration input
                     OutlinedTextField(
                         value = durationInput,
                         onValueChange = { durationInput = it },
@@ -186,60 +173,46 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                         singleLine = true
                     )
 
-                    // Intensity
+                    // Intensity selection via radio buttons
                     Column {
-                        Text(
-                            "💪 Training Intensity",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.Gray
-                        )
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            listOf("Low 🟢", "Medium 🟡", "High 🔴").forEach { label ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    RadioButton(
-                                        selected = selectedIntensity in label,
-                                        onClick = { selectedIntensity = label.split(" ")[0] },
-                                        colors = RadioButtonDefaults.colors(
-                                            selectedColor = Color(
-                                                0xFF2E8B57
-                                            )
-                                        )
-                                    )
-                                    Text(
-                                        text = label,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(start = 4.dp)
-                                    )
-                                }
+                        Text("💪 Training Intensity", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = Color.Gray)
+                        listOf("Low 🟢", "Medium 🟡", "High 🔴").forEach { label ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                RadioButton(
+                                    selected = selectedIntensity in label,
+                                    onClick = { selectedIntensity = label.split(" ")[0] },
+                                    colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF2E8B57))
+                                )
+                                Text(label, fontSize = 18.sp, modifier = Modifier.padding(start = 4.dp))
                             }
                         }
                     }
 
+                    // Confirm button
                     Button(
                         onClick = {
                             errorMessage = null
 
-                            if (dateInput.isBlank()) {
-                                errorMessage = "❗ Please select a date"
-                            } else if (durationInput.isBlank()) {
-                                errorMessage = "❗ Duration is required"
-                            } else if (durationInput.toIntOrNull() == null || durationInput.toInt() <= 0) {
-                                errorMessage = "❗ Duration must be a valid number"
+                            // Input validation
+                            when {
+                                dateInput.isBlank() -> errorMessage = "❗ Please select a date"
+                                durationInput.isBlank() -> errorMessage = "❗ Duration is required"
+                                durationInput.toIntOrNull() == null || durationInput.toInt() <= 0 ->
+                                    errorMessage = "❗ Duration must be a valid number"
                             }
 
                             if (errorMessage != null) {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(errorMessage!!)
-                                }
+                                scope.launch { snackbarHostState.showSnackbar(errorMessage!!) }
                                 return@Button
                             }
 
                             try {
                                 val duration = durationInput.toInt()
+
+                                // Create and insert record
                                 val record = ExerciseRecord(
                                     exerciseType = selectedExercise,
                                     date = dateInput,
@@ -247,17 +220,15 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     intensity = selectedIntensity,
                                     userId = userId
                                 )
-
                                 viewModel.insertRecord(record)
 
-
+                                // Estimate calories
                                 val intensityMultiplier = when (selectedIntensity.lowercase()) {
                                     "low" -> 3
                                     "medium" -> 5
                                     "high" -> 8
                                     else -> 4
                                 }
-
                                 val typeMultiplier = when (selectedExercise.lowercase()) {
                                     "cardio" -> 1.2f
                                     "strength" -> 1.0f
@@ -265,9 +236,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     "hiit" -> 1.5f
                                     else -> 1.0f
                                 }
-
                                 val calories = (duration * intensityMultiplier * typeMultiplier).toInt()
-
                                 val intensityIndex = when (selectedIntensity.lowercase()) {
                                     "low" -> 0
                                     "medium" -> 1
@@ -275,6 +244,7 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     else -> 1
                                 }
 
+                                // Upload summary data to Firebase
                                 viewModel.logExerciseToFirebase(
                                     uid = userId,
                                     date = dateInput.replace("-", ""),
@@ -283,40 +253,29 @@ fun RecordScreen(viewModel: ExerciseViewModel, onConfirm: () -> Unit = {}) {
                                     intensityIndex = intensityIndex
                                 )
 
-
+                                // Reset form
                                 dateInput = ""
                                 durationInput = ""
                                 selectedExercise = "Cardio"
                                 selectedIntensity = "Medium"
 
                                 onConfirm()
+
                             } catch (e: Exception) {
                                 Log.e("RecordScreen", "Failed to insert record: ${e.message}", e)
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("⚠️ Failed to save record.")
-                                }
+                                scope.launch { snackbarHostState.showSnackbar("⚠️ Failed to save record.") }
                             }
                         },
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57))
                     ) {
-                        Text(
-                            "✅ CONFIRM",
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text("✅ CONFIRM", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewRecordScreen() {
-//    RecordScreen()
-//}

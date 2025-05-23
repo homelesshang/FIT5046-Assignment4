@@ -32,7 +32,6 @@ import androidx.navigation.NavHostController
 import com.example.a5046demo.uipage.navigation.HomePageRoutes
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun HomeScreen(
     viewModel: UserProfileViewModel,
@@ -44,7 +43,6 @@ fun HomeScreen(
     val showDialog = remember { mutableStateOf(false) }
     val inputWeight = remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-
 
     LaunchedEffect(Unit) {
         exerciseViewModel.loadTodayStats()
@@ -72,8 +70,7 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
-        // 🔹 Profile Info
+        // Profile Info
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,7 +91,7 @@ fun HomeScreen(
             }
         }
 
-        // 🔹 Highlighted Card
+        // Highlighted Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
@@ -122,7 +119,7 @@ fun HomeScreen(
             }
         }
 
-        // 🔹 Daily Exercise Summary
+        // Daily Exercise Summary
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Today's Breakdown", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
@@ -142,7 +139,7 @@ fun HomeScreen(
             }
         }
 
-        // 🔹 Weight Info Card
+        // Weight Info Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF2E8B57)),
@@ -176,7 +173,6 @@ fun HomeScreen(
                             Text("New Weight", color = Color(0xFF2E8B57))
                         }
                     }
-
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -232,19 +228,15 @@ fun HomeScreen(
                         }
                     )
                 }
-
             }
         }
 
-        // 🔹 Weather Info (Always Shown)
+        // Weather Info
         WeatherCard(userProfileViewModel = viewModel)
 
         Spacer(modifier = Modifier.height(100.dp))
     }
 }
-
-
-
 
 @Composable
 fun ExerciseCard(title: String, kcal: Int, color: Color) {
@@ -264,7 +256,7 @@ fun ExerciseCard(title: String, kcal: Int, color: Color) {
 }
 
 @Composable
-fun WeatherCard(userProfileViewModel: UserProfileViewModel,viewModel: WeatherViewModel = viewModel()) {
+fun WeatherCard(userProfileViewModel: UserProfileViewModel, viewModel: WeatherViewModel = viewModel()) {
     val weatherText by viewModel.weather.collectAsState()
     val profile by userProfileViewModel.userProfile.collectAsState(initial = null)
     if (profile == null) {
@@ -275,7 +267,6 @@ fun WeatherCard(userProfileViewModel: UserProfileViewModel,viewModel: WeatherVie
     }
     val region by remember { mutableStateOf(profile!!.region) }
     val regionWithCountry = "$region,AU"
-
 
     LaunchedEffect(Unit) {
         viewModel.fetchWeather(regionWithCountry)
@@ -302,21 +293,10 @@ fun WeatherCard(userProfileViewModel: UserProfileViewModel,viewModel: WeatherVie
             )
 
             Text(
-                text = weatherText, // 动态显示天气信息
+                text = weatherText,
                 fontSize = 16.sp,
                 color = Color(0xFF2E8B57)
             )
         }
     }
 }
-
-
-
-
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewHomeScreen() {
-//    HomeScreen()
-//}

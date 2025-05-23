@@ -25,8 +25,9 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-
 class ExerciseViewModel(application: Application, userId: String) : AndroidViewModel(application) {
+
+    // Estimated calorie burn rate by exercise type
     private val calorieRates = mapOf(
         "Cardio" to 6,
         "Strength" to 8,
@@ -35,29 +36,36 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
         "Pilates" to 4
     )
 
+    // Holds current day's exercise stats grouped by type
     private val _todayStats = MutableStateFlow<List<ExerciseStat>>(emptyList())
     val todayStats: StateFlow<List<ExerciseStat>> = _todayStats
+
+    // Holds weekly statistics (weight, calories, duration) mapped to weekday labels
     private val _weeklyStats = MutableStateFlow<List<LabeledStat>>(emptyList())
     val weeklyStats: StateFlow<List<LabeledStat>> = _weeklyStats
 
-
-
+    // Repository for accessing local Room database
     private val repository = ExerciseRepository(application)
+
+    // Live stream of all records for this user
     val allRecords: Flow<List<ExerciseRecord>> = repository.getRecordsByUser(userId)
 
+    // Insert a new record to the local database
     fun insertRecord(record: ExerciseRecord) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(record)
     }
 
+    // Update an existing record
     fun updateRecord(record: ExerciseRecord) = viewModelScope.launch(Dispatchers.IO) {
         repository.update(record)
     }
 
+    // Delete a record
     fun deleteRecord(record: ExerciseRecord) = viewModelScope.launch(Dispatchers.IO) {
         repository.delete(record)
     }
 
-
+    // Log exercise data to Firebase (for syncing with cloud)
     fun logExerciseToFirebase(
         uid: String,
         date: String,
@@ -66,7 +74,6 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
         intensityIndex: Int
     ) {
         val repo = FirebaseRepository()
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.logExercise(uid, date, duration, calories, intensityIndex)
@@ -76,13 +83,13 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
         }
     }
 
+    // Load today’s stats from local database and compute grouped calorie values
     fun loadTodayStats() {
         viewModelScope.launch {
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             val all = allRecords.firstOrNull() ?: emptyList()
 
             val todayRecords = all.filter { it.date == today }
-
             val grouped = todayRecords.groupBy { it.exerciseType }
 
             val stats = grouped.map { (type, records) ->
@@ -95,37 +102,41 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
         }
     }
 
+    // Return a color for each exercise type for UI purposes
     private fun getColorForType(type: String): Color = when (type) {
         "Cardio" -> Color(0xFF2E8B57)
         "Strength" -> Color(0xFF000000)
         "Yoga" -> Color(0xFF8E44AD)
         "HIIT" -> Color(0xFFE74C3C)
         "Pilates" -> Color(0xFF888888)
-
-        else -> {Color.Transparent}
+        else -> Color.Transparent
     }
 
+    // For future use: holds raw list of daily stats from Firebase
     val dailyStats = MutableStateFlow<List<DailyStat>>(emptyList())
 
+    // Wrapper data class for labeled stats shown in graphs
     data class LabeledStat(
-        val label: String, // "Mon", "Tue", etc.
+        val label: String, // E.g., "Mon", "Tue"
         val stat: DailyStat
     )
+
+    // Load the last 7 days’ stats from Firebase and attach weekday labels
     fun loadWeeklyStats(uid: String) {
         viewModelScope.launch {
-
-
             val labeledStats = mutableListOf<LabeledStat>()
             val db = Firebase.firestore
             val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
             val dayLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
+            // Find most recent Monday
             val today = LocalDate.now()
             val monday = today.minusDays((today.dayOfWeek.value % 7).toLong())
 
             for (i in 0..6) {
                 val date = monday.plusDays(i.toLong())
                 val docId = date.format(formatter)
+
                 val snapshot = db.collection("users")
                     .document(uid)
                     .collection("dailyStats")
@@ -138,10 +149,6 @@ class ExerciseViewModel(application: Application, userId: String) : AndroidViewM
             }
 
             _weeklyStats.value = labeledStats
-
         }
     }
-
-
-
 }

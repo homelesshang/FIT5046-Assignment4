@@ -22,13 +22,23 @@ import com.example.a5046demo.viewmodel.ExerciseViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 
+// Main entry point of the application
 class MainActivity : ComponentActivity() {
+
+    // Lifecycle callback when the activity is created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Enables edge-to-edge content drawing
         enableEdgeToEdge()
+
+        // Sets the content of the activity using Jetpack Compose
         setContent {
+            // Applies the custom MaterialTheme to the whole app
             _5046demoTheme {
+                // Surface provides a background for the UI
                 Surface(modifier = Modifier.fillMaxSize()) {
+                    // Launches the navigation system and routes
                     StartAppNavigation()
                 }
             }
