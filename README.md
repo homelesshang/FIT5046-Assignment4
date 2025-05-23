@@ -1,4 +1,4 @@
-# 🏋️ Fitness Snap App
+# 🏋️ Fitnest App
 
 A modern Android fitness tracking app built using **Jetpack Compose**, **Room**, and **Firebase**. The app allows users to log workouts, visualize progress, and manage profile data in both local and cloud databases.
 
