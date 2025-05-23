@@ -34,19 +34,21 @@ fun RegisterScreen(
     navController: NavController,
     viewModel: AuthViewModel = viewModel()
 ) {
+    // Form input state
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
-    var passwordError by remember {                      mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
     var showError by remember { mutableStateOf<String?>(null) }
 
+    // Date formatting setup
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val datePickerState = rememberDatePickerState()
     val authState by viewModel.authState.collectAsState()
 
-    // Password validation
+    // Validate password when user types
     LaunchedEffect(password, confirmPassword) {
         passwordError = when {
             password.length < 6 -> "Password must be at least 6 characters"
@@ -54,12 +56,13 @@ fun RegisterScreen(
             else -> null
         }
     }
+
     val context = LocalContext.current
+
+    // Navigate on success, show error on failure
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
-
-
                 navController.navigate(HomePageRoutes.Home) {
                     popUpTo(AuthRoutes.Register) { inclusive = true }
                 }
@@ -71,6 +74,7 @@ fun RegisterScreen(
         }
     }
 
+    // Register UI layout
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,6 +90,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Email input
         FitNestTextField(
             value = email,
             onValueChange = {
@@ -101,6 +106,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Password input
         FitNestTextField(
             value = password,
             onValueChange = {
@@ -117,6 +123,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Confirm password input
         FitNestTextField(
             value = confirmPassword,
             onValueChange = {
@@ -131,6 +138,7 @@ fun RegisterScreen(
             )
         )
 
+        // Show password validation error if exists
         if (passwordError != null) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -140,6 +148,7 @@ fun RegisterScreen(
             )
         }
 
+        // Show auth error if exists
         if (showError != null) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -151,6 +160,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Date of birth (read-only, opens date picker)
         OutlinedTextField(
             value = dateOfBirth,
             onValueChange = { },
@@ -166,6 +176,7 @@ fun RegisterScreen(
             )
         )
 
+        // Show date picker dialog
         if (showDatePicker) {
             DatePickerDialog(
                 onDismissRequest = { showDatePicker = false },
@@ -199,6 +210,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Submit registration button
         FitNestButton(
             onClick = {
                 viewModel.register(email, password, dateOfBirth)
@@ -214,6 +226,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Redirect to login
         TextButton(
             onClick = { navController.navigate(AuthRoutes.Login) },
             enabled = authState !is AuthState.Loading
