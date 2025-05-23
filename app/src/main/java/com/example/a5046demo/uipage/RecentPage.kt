@@ -254,7 +254,7 @@ fun OverviewStatCard(
                             "Weight 🃏" -> {
                                 val totalLogs = barData.count { it > 0f }
                                 if (totalLogs == 0) "Start logging today!"
-                                else "You did $totalLogs workouts this week. Way to go king 👑"
+                                else "You workout $totalLogs days week. Way to go king 👑"
                             }
                             "Calories 🔥" -> {
                                 val totalCalories = barData.sum().toInt()
